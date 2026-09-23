@@ -4,6 +4,7 @@
    The badge follows the source that actually answered. */
 
 import { supabase, supabaseConfigured } from '../lib/supabase.js';
+import { getParentSession } from './cloudSync.js';
 
 const TIP_BY_TYPE = {
   bd_confusion: 'coach.tipLetter',
@@ -54,6 +55,8 @@ export async function resolveCoach(input = {}) {
   const fallback = demoCoach(input);
   if (!coachLiveConfigured()) return fallback;
   try {
+    const session = await getParentSession();
+    if (!session?.user) return fallback;
     const { data, error } = await supabase.functions.invoke('coach', {
       body: {
         kind: input.kind || 'child',
