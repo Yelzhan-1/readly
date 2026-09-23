@@ -10,7 +10,7 @@ import React, {
 import { loadState, saveState, clearState } from '../services/storage.js';
 import { createDemoState } from '../data/demoSeed.js';
 import { normalizeProfile, resetDailyQuest } from '../services/profileService.js';
-import { pullCloudState, scheduleCloudPush } from '../services/cloudSync.js';
+import { adoptCloudAccount, getParentSession, pullCloudState, scheduleCloudPush } from '../services/cloudSync.js';
 import { mergeHydratedState } from '../services/cloudMerge.js';
 import en from '../locales/en.js';
 import ru from '../locales/ru.js';
@@ -146,7 +146,13 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     let cancel = false;
-    pullCloudState()
+    const presentIds = (state.profiles || []).map((profile) => profile.id);
+    getParentSession()
+      .then((session) => {
+        if (cancel || !session?.user) return null;
+        adoptCloudAccount(session.user.id, presentIds);
+        return pullCloudState();
+      })
       .then((remote) => {
         if (cancel || !remote?.profiles?.length) return;
         dispatch({
@@ -189,6 +195,14 @@ export function AppProvider({ children }) {
     []
   );
   const resetDemo = useCallback(() => dispatch({ type: 'resetDemo' }), []);
+  const hydrateCloud = useCallback((remote) => {
+    if (!remote?.profiles?.length) return;
+    dispatch({
+      type: 'hydrateCloud',
+      profiles: remote.profiles,
+      stories: remote.stories || [],
+    });
+  }, []);
 
   const pushToast = useCallback((toast) => {
     const id = uid('toast');
@@ -214,6 +228,7 @@ export function AppProvider({ children }) {
       parentUnlocked: state.parentUnlocked,
       setParentUnlocked,
       resetDemo,
+      hydrateCloud,
       toasts: state.toasts,
       pushToast,
       dismissToast,
@@ -229,6 +244,7 @@ export function AppProvider({ children }) {
       addStory,
       setParentUnlocked,
       resetDemo,
+      hydrateCloud,
       pushToast,
       dismissToast,
     ]

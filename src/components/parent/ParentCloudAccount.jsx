@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import {
+  adoptCloudAccount,
   cloudMode,
   getParentSession,
-  pushState,
+  pullCloudState,
   signInParent,
   signOutParent,
   signUpParent,
@@ -13,7 +14,7 @@ import Button from '../ui/Button.jsx';
 
 export default function ParentCloudAccount() {
   const t = useT();
-  const { state } = useApp();
+  const { state, hydrateCloud } = useApp();
   const mode = cloudMode();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +39,7 @@ export default function ParentCloudAccount() {
   const run = async (fn) => {
     setBusy(true);
     setNote('');
+    const presentIds = (state.profiles || []).map((profile) => profile.id);
     const { data, error } = await fn(email.trim(), password);
     setBusy(false);
     if (error) {
@@ -45,10 +47,14 @@ export default function ParentCloudAccount() {
       return;
     }
     const signed = data?.session?.user?.email || '';
-    if (signed) {
+    const userId = data?.session?.user?.id || '';
+    if (signed && userId) {
+      adoptCloudAccount(userId, presentIds);
       setSessionEmail(signed);
       setPassword('');
-      pushState(state).catch(() => {});
+      pullCloudState()
+        .then((remote) => hydrateCloud(remote))
+        .catch(() => {});
       return;
     }
     setNote(t('parent.cloudCheckEmail'));

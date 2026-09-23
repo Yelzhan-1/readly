@@ -36,26 +36,47 @@ let pushing = false;
 let pendingState = null;
 let pushRetries = 0;
 let latestState = null;
+let queueEpoch = 0;
+let boundUserId = null;
+let adoptedProfileIds = null;
+
+/** Drop queued snapshots when the signed-in parent changes. */
+export function adoptCloudAccount(userId, profileIds = []) {
+  const next = userId || null;
+  if (next === boundUserId) return;
+  queueEpoch += 1;
+  if (timer) clearTimeout(timer);
+  timer = null;
+  latestState = null;
+  pendingState = null;
+  pushRetries = 0;
+  boundUserId = next;
+  adoptedProfileIds = next ? new Set(profileIds || []) : null;
+}
 
 export function scheduleCloudPush(state) {
-  if (cloudMode() === 'off') return;
+  if (cloudMode() === 'off' || !boundUserId) return;
+  const epoch = queueEpoch;
+  const ownerId = boundUserId;
   latestState = state;
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => {
-    pushState(latestState || state).catch((err) => {
+    if (epoch !== queueEpoch || boundUserId !== ownerId) return;
+    pushState(latestState || state, { ownerId }).catch((err) => {
       console.warn('[cloud] push skipped', err?.message || err);
     });
   }, 700);
 }
 
-function runQueued(state, { retry = false, delay = 0 } = {}) {
+function runQueued(state, { retry = false, delay = 0, ownerId, epoch } = {}) {
   setTimeout(() => {
+    if (epoch !== queueEpoch || !ownerId || ownerId !== boundUserId) return;
     const next = latestState || state;
     if (pushing || cloudMode() === 'off') {
       if (!pendingState) pendingState = next;
       return;
     }
-    pushState(next, { retry }).catch((err) => {
+    pushState(next, { retry, ownerId }).catch((err) => {
       console.warn('[cloud] push skipped', err?.message || err);
     });
   }, delay);
@@ -96,12 +117,15 @@ async function ensureChildId(user, profile, map, lang) {
   return data.id;
 }
 
-export async function pushState(state, { retry = false } = {}) {
+export async function pushState(state, { retry = false, ownerId = null } = {}) {
   if (cloudMode() === 'off') return { pushed: false };
+  const expected = ownerId || boundUserId;
+  if (!expected || expected !== boundUserId) return { pushed: false, reason: 'stale-account' };
+  const epoch = queueEpoch;
   if (!retry) latestState = state;
   const snapshot = latestState || state;
   if (pushing) {
-    pendingState = snapshot;
+    if (!pendingState) pendingState = snapshot;
     return { pushed: false, reason: 'queued' };
   }
   if (!retry) pushRetries = 0;
@@ -109,11 +133,15 @@ export async function pushState(state, { retry = false } = {}) {
   let followUpRetry = false;
   try {
     const user = await currentUser();
-    if (!user) return { pushed: false, reason: 'no-session' };
+    if (!user || user.id !== expected || boundUserId !== expected || epoch !== queueEpoch) {
+      return { pushed: false, reason: 'stale-account' };
+    }
     const map = readJson(mapKey(user.id));
     const cursor = readJson(cursorKey(user.id));
 
     for (const profile of snapshot.profiles || []) {
+      const known = Boolean(map[profile.id]);
+      if (!known && adoptedProfileIds?.has(profile.id)) continue;
       const childId = await ensureChildId(user, profile, map, snapshot.lang);
       const { error } = await supabase
         .from('child_profiles')
@@ -187,6 +215,7 @@ export async function pushState(state, { retry = false } = {}) {
     return { pushed: false, reason: 'error' };
   } finally {
     pushing = false;
+    if (epoch !== queueEpoch || boundUserId !== expected) return;
     if (latestState && latestState !== snapshot && !pendingState) {
       pendingState = latestState;
       followUpRetry = false;
@@ -195,7 +224,7 @@ export async function pushState(state, { retry = false } = {}) {
       const next = latestState || pendingState;
       const asRetry = followUpRetry && next === snapshot;
       pendingState = null;
-      runQueued(next, { retry: asRetry, delay: asRetry ? 800 : 0 });
+      runQueued(next, { retry: asRetry, delay: asRetry ? 800 : 0, ownerId: expected, epoch });
     }
   }
 }
@@ -255,6 +284,7 @@ export async function signUpParent(email, password) {
 }
 
 export async function signOutParent() {
+  adoptCloudAccount(null);
   if (!supabase) return;
   await supabase.auth.signOut();
 }
