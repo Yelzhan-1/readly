@@ -56,6 +56,8 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
     startRef.current = Date.now();
     setInterim('');
     setPhase('recording');
+    // Practice words and stories are English. The mic stays en-US on purpose;
+    // the UI language only changes labels and spoken feedback.
     const rec = createRecognizer({
       lang: 'en-US',
       onFinal: (text) => {
@@ -137,6 +139,9 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
           <button type="button" className="btn btn--primary btn--lg" onClick={startMic} disabled={locked}>
             🎤 {t('reading.startReading')}
           </button>
+          <p className="small muted center" style={{ margin: 0, flexBasis: '100%' }}>
+            {t('reading.micEnglish')}
+          </p>
           <button type="button" className="btn btn--ghost" onClick={() => { setTapMode(true); startRef.current = Date.now(); }} disabled={locked}>
             👆 {t('reading.tapMode')}
           </button>

@@ -544,7 +544,7 @@
   color: #fff;
   background:
     radial-gradient(420px 200px at 90% -20%, rgba(255, 255, 255, 0.42), transparent 60%),
-    linear-gradient(145deg, #f09474 0%, #e36a62 48%, #c97a9e 100%);
+    linear-gradient(145deg, #b84336 0%, #9a3048 48%, #6e2d55 100%);
   box-shadow: var(--sh-lg);
   overflow: hidden;
   display: flex;

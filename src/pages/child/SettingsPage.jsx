@@ -99,6 +99,7 @@ export default function SettingsPage() {
             ['sm', t('settings.sizeSm')],
             ['md', t('settings.sizeMd')],
             ['lg', t('settings.sizeLg')],
+            ['xl', t('settings.sizeXl')],
           ].map(([val, lab]) => (
             <button
               key={val}

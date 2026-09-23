@@ -47,7 +47,7 @@
 }
 
 .parent-nav a:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
-.parent-nav a.active { background: #e98b73; color: #fff; box-shadow: 0 6px 16px rgba(233, 139, 115, 0.35); }
+.parent-nav a.active { background: #9a3048; color: #fff; box-shadow: 0 6px 16px rgba(154, 48, 72, 0.35); }
 
 .parent-main .panel { animation: fadeUp 0.4s ease both; }
 .parent-main .coach-panel { margin-bottom: 18px; }

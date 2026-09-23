@@ -34,6 +34,7 @@ export default {
     forParent: 'Ата-аналарға',
     hello: 'Сәлем',
     comingSoon: 'Жақында',
+    delete: 'Жою',
   },
 
   landing: {
@@ -287,6 +288,7 @@ export default {
     stopReading: 'Бітірдім',
     analyzing: 'Оқуың тыңдалуда…',
     micUnavailable: 'Микрофон қол жетімді емес. Мәтіндік тапсырмалармен жалғастыра беруге болады.',
+    micEnglish: 'Микрофон ағылшынша тыңдайды. Жаттығу сөздері ағылшынша.',
     tapMode: 'Оқыған сөздерді бас',
     tapModeHint: 'Микрофон жоқ па? Әр сөзді оқыған соң бас.',
     analysisTitle: 'Тамаша еңбек!',
@@ -455,6 +457,7 @@ export default {
     sizeSm: 'Кіші',
     sizeMd: 'Орташа',
     sizeLg: 'Үлкен',
+    sizeXl: 'Өте үлкен',
     reducedMotion: 'Аз қозғалыс',
     reducedMotionSub: 'Сабырлы анимациялар',
     childProfile: 'Бала профилі',
@@ -718,6 +721,7 @@ export default {
     notFound: 'Бұл бет ұйықтап жатыр.',
     notFoundSub: 'Қайта оралып, шытырманды жалғастырайық.',
     goHome: 'Басты бетке',
+    saveFailed: 'Құрылғыда орын аз. Прогресс сақталмауы мүмкін.',
   },
 
   toast: {

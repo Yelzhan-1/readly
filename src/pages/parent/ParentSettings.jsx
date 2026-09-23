@@ -261,6 +261,7 @@ export default function ParentSettings() {
                 <option value="sm">{t('settings.sizeSm')}</option>
                 <option value="md">{t('settings.sizeMd')}</option>
                 <option value="lg">{t('settings.sizeLg')}</option>
+                <option value="xl">{t('settings.sizeXl')}</option>
               </select>
             </div>
           </div>

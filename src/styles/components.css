@@ -29,19 +29,19 @@
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .btn--primary {
-  background: linear-gradient(180deg, #ff8a57, var(--primary));
+  background: linear-gradient(180deg, #d4532e, #b03a22);
   color: #fff;
-  box-shadow: 0 6px 0 var(--primary-dark), var(--sh-md);
+  box-shadow: 0 6px 0 #8c2d1a, var(--sh-md);
 }
-.btn--primary:hover { box-shadow: 0 8px 0 var(--primary-dark), var(--sh-lg); }
-.btn--primary:active { box-shadow: 0 3px 0 var(--primary-dark); }
+.btn--primary:hover { box-shadow: 0 8px 0 #8c2d1a, var(--sh-lg); }
+.btn--primary:active { box-shadow: 0 3px 0 #8c2d1a; }
 
 .btn--teal {
-  background: linear-gradient(180deg, #22cbb8, var(--teal));
+  background: linear-gradient(180deg, #0f8f82, #0b5f56);
   color: #fff;
-  box-shadow: 0 6px 0 #0e9484, var(--sh-md);
+  box-shadow: 0 6px 0 #084840, var(--sh-md);
 }
-.btn--teal:active { box-shadow: 0 3px 0 #0e9484; }
+.btn--teal:active { box-shadow: 0 3px 0 #084840; }
 
 .btn--violet {
   background: linear-gradient(180deg, #8d7ff6, var(--violet));
@@ -383,6 +383,7 @@
 .toast--success { background: #14784f; }
 .toast--info { background: #3b4a86; }
 .toast--warm { background: var(--primary-dark); }
+.toast--warn { background: #8c2d1a; }
 
 /* ---------- Modal ---------- */
 .modal-backdrop {

@@ -7,8 +7,8 @@ import { supabase, supabaseConfigured } from '../lib/supabase.js';
 
 const viteEnv = import.meta.env || {};
 const forceLocal = String(viteEnv.VITE_READLY_CLOUD ?? '') === '0';
-const MAP_KEY = 'readly.cloud.ids.v1';
-const CURSOR_KEY = 'readly.cloud.cursor.v1';
+const mapKey = (uid) => `readly.cloud.ids.v1:${uid}`;
+const cursorKey = (uid) => `readly.cloud.cursor.v1:${uid}`;
 
 export function cloudMode() {
   if (forceLocal || !supabaseConfigured || !supabase) return 'off';
@@ -33,6 +33,8 @@ function writeJson(key, value) {
 
 let timer = null;
 let pushing = false;
+let pendingState = null;
+let pushRetries = 0;
 
 export function scheduleCloudPush(state) {
   if (cloudMode() === 'off') return;
@@ -42,6 +44,18 @@ export function scheduleCloudPush(state) {
       console.warn('[cloud] push skipped', err?.message || err);
     });
   }, 700);
+}
+
+function runQueued(state, { retry = false, delay = 0 } = {}) {
+  setTimeout(() => {
+    if (pushing || cloudMode() === 'off') {
+      pendingState = state;
+      return;
+    }
+    pushState(state, { retry }).catch((err) => {
+      console.warn('[cloud] push skipped', err?.message || err);
+    });
+  }, delay);
 }
 
 async function currentUser() {
@@ -68,7 +82,7 @@ async function ensureChildId(user, profile, map, lang) {
     .single();
   if (error) throw error;
   map[profile.id] = data.id;
-  writeJson(MAP_KEY, map);
+  writeJson(mapKey(user.id), map);
   const link = await supabase.from('parent_child_links').insert({
     parent_id: user.id,
     child_id: data.id,
@@ -79,14 +93,20 @@ async function ensureChildId(user, profile, map, lang) {
   return data.id;
 }
 
-export async function pushState(state) {
-  if (cloudMode() === 'off' || pushing) return { pushed: false };
+export async function pushState(state, { retry = false } = {}) {
+  if (cloudMode() === 'off') return { pushed: false };
+  if (pushing) {
+    pendingState = state;
+    return { pushed: false, reason: 'queued' };
+  }
+  if (!retry) pushRetries = 0;
   pushing = true;
+  let followUpRetry = false;
   try {
     const user = await currentUser();
     if (!user) return { pushed: false, reason: 'no-session' };
-    const map = readJson(MAP_KEY);
-    const cursor = readJson(CURSOR_KEY);
+    const map = readJson(mapKey(user.id));
+    const cursor = readJson(cursorKey(user.id));
 
     for (const profile of state.profiles || []) {
       const childId = await ensureChildId(user, profile, map, state.lang);
@@ -121,7 +141,7 @@ export async function pushState(state) {
         const { error: evErr } = await supabase.from('progress_events').insert(rows);
         if (evErr) throw evErr;
         cursor[profile.id] = Math.max(...fresh.map((h) => h.at || 0));
-        writeJson(CURSOR_KEY, cursor);
+        writeJson(cursorKey(user.id), cursor);
       }
     }
 
@@ -136,24 +156,38 @@ export async function pushState(state) {
       };
       if (map[storyKey]) {
         const { error } = await supabase.from('stories').update(row).eq('id', map[storyKey]);
-        if (error) console.warn('[cloud] story update skipped', error.message);
+        if (error) throw error;
       } else {
         const { data, error } = await supabase
           .from('stories')
           .insert({ ...row, child_id: childId })
           .select('id')
           .single();
-        if (error) {
-          console.warn('[cloud] story insert skipped', error.message);
-        } else {
+        if (error) throw error;
+        else {
           map[storyKey] = data.id;
-          writeJson(MAP_KEY, map);
+          writeJson(mapKey(user.id), map);
         }
       }
     }
+    pushRetries = 0;
     return { pushed: true };
+  } catch (err) {
+    console.warn('[cloud] push skipped', err?.message || err);
+    if (!pendingState && pushRetries < 2) {
+      pushRetries += 1;
+      pendingState = state;
+      followUpRetry = true;
+    }
+    return { pushed: false, reason: 'error' };
   } finally {
     pushing = false;
+    if (pendingState) {
+      const next = pendingState;
+      const asRetry = followUpRetry;
+      pendingState = null;
+      runQueued(next, { retry: asRetry, delay: asRetry ? 800 : 0 });
+    }
   }
 }
 
@@ -163,16 +197,17 @@ export async function pullCloudState() {
   if (!user) return null;
   const { data, error } = await supabase
     .from('child_profiles')
-    .select('id, profile_json, display_name, age, interests, theme, demo')
+    .select('id, profile_json, display_name, age, interests, theme, demo, updated_at')
     .order('updated_at', { ascending: false });
   if (error || !data?.length) return null;
 
-  const map = readJson(MAP_KEY);
+  const map = readJson(mapKey(user.id));
   const profiles = data.map((row) => {
     const local = row.profile_json && typeof row.profile_json === 'object' ? row.profile_json : {};
     const known = Object.keys(map).find((k) => map[k] === row.id && !k.startsWith('story:'));
     const localId = known || local.id || row.id;
     map[localId] = row.id;
+    const cloudUpdated = row.updated_at ? Date.parse(row.updated_at) : 0;
     return {
       ...local,
       id: localId,
@@ -181,9 +216,10 @@ export async function pullCloudState() {
       interests: local.interests || row.interests || [],
       mascot: local.mascot || row.theme,
       demo: local.demo ?? row.demo,
+      updatedAt: Number.isFinite(cloudUpdated) ? cloudUpdated : local.updatedAt,
     };
   });
-  writeJson(MAP_KEY, map);
+  writeJson(mapKey(user.id), map);
 
   const { data: stories } = await supabase.from('stories').select('meta');
   const restored = (stories || [])

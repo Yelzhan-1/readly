@@ -397,14 +397,17 @@ export default function SessionRunner({
               variant="primary"
               onClick={() => {
                 const durationSec = Math.round((Date.now() - stats.startedAt) / 1000);
-                finishSession({
-                  module,
-                  correct: stats.correct,
-                  total: idx + (phase === 'feedback' && lastAnalysis?.ok ? 1 : 0),
-                  stars: stats.stars,
-                  durationSec,
-                  questItem: null,
-                });
+                const attempted = idx + (phase === 'feedback' ? 1 : 0);
+                if (attempted > 0) {
+                  finishSession({
+                    module,
+                    correct: stats.correct,
+                    total: attempted,
+                    stars: stats.stars,
+                    durationSec,
+                    questItem: null,
+                  });
+                }
                 finishedRef.current = true;
                 exit();
               }}

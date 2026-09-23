@@ -5,12 +5,19 @@ import React, {
   useMemo,
   useReducer,
   useCallback,
+  useRef,
 } from 'react';
 import { loadState, saveState, clearState } from '../services/storage.js';
 import { createDemoState } from '../data/demoSeed.js';
 import { normalizeProfile, resetDailyQuest } from '../services/profileService.js';
 import { pullCloudState, scheduleCloudPush } from '../services/cloudSync.js';
+import { mergeHydratedState } from '../services/cloudMerge.js';
+import en from '../locales/en.js';
+import ru from '../locales/ru.js';
+import kk from '../locales/kk.js';
 import { uid } from '../utils/random.js';
+
+const DICT = { en, ru, kk };
 
 const STORAGE_KEY_PARENT = 'readly.parent.unlocked';
 const AppCtx = createContext(null);
@@ -65,7 +72,7 @@ function reducer(state, action) {
 
     case 'mutateProfile': {
       const profiles = state.profiles.map((p) =>
-        p.id === action.id ? action.fn(p) : p
+        p.id === action.id ? { ...action.fn(p), updatedAt: Date.now() } : p
       );
       return { ...state, profiles };
     }
@@ -100,12 +107,11 @@ function reducer(state, action) {
 
     case 'hydrateCloud': {
       if (!action.profiles?.length) return state;
-      return {
-        ...state,
-        profiles: action.profiles.map((p) => normalizeProfile({ ...p })),
-        activeProfileId: action.activeProfileId || action.profiles[0]?.id || state.activeProfileId,
-        stories: Array.isArray(action.stories) ? action.stories : state.stories,
-      };
+      const merged = mergeHydratedState(state, {
+        profiles: action.profiles,
+        stories: action.stories,
+      });
+      return { ...state, ...merged };
     }
 
     default:
@@ -113,13 +119,29 @@ function reducer(state, action) {
   }
 }
 
+function saveFailedText(lang) {
+  return DICT[lang]?.errors?.saveFailed || DICT.en.errors.saveFailed;
+}
+
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, initState);
+  const saveWarnRef = useRef(false);
 
   /* persistence */
   useEffect(() => {
-    saveState(state);
+    const ok = saveState(state);
     scheduleCloudPush(state);
+    if (!ok && !saveWarnRef.current) {
+      saveWarnRef.current = true;
+      const id = uid('toast');
+      dispatch({
+        type: 'pushToast',
+        toast: { id, icon: '⚠️', tone: 'warn', text: saveFailedText(state.lang) },
+      });
+      setTimeout(() => dispatch({ type: 'dismissToast', id }), 5200);
+    } else if (ok) {
+      saveWarnRef.current = false;
+    }
   }, [state.lang, state.settings, state.profiles, state.activeProfileId, state.stories]);
 
   useEffect(() => {

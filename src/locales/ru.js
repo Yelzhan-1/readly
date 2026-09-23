@@ -34,6 +34,7 @@ export default {
     forParent: 'Для родителей',
     hello: 'Привет',
     comingSoon: 'Скоро',
+    delete: 'Удалить',
   },
 
   landing: {
@@ -287,6 +288,7 @@ export default {
     stopReading: 'Я закончил',
     analyzing: 'Слушаем твоё чтение…',
     micUnavailable: 'Микрофон недоступен. Можешь продолжить текстовые задания.',
+    micEnglish: 'Микрофон слушает по-английски. Слова для практики на английском.',
     tapMode: 'Нажимай на слова, когда читаешь',
     tapModeHint: 'Без микрофона? Нажимай на каждую слово после чтения.',
     analysisTitle: 'Замечательное усилие!',
@@ -455,6 +457,7 @@ export default {
     sizeSm: 'Маленький',
     sizeMd: 'Средний',
     sizeLg: 'Большой',
+    sizeXl: 'Очень большой',
     reducedMotion: 'Меньше анимаций',
     reducedMotionSub: 'Спокойные переходы',
     childProfile: 'Профиль ребёнка',
@@ -718,6 +721,7 @@ export default {
     notFound: 'Эта страница дремлет.',
     notFoundSub: 'Давай вернёмся и продолжим приключение.',
     goHome: 'На главную',
+    saveFailed: 'На устройстве мало места. Прогресс может не сохраниться.',
   },
 
   toast: {

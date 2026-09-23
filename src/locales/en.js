@@ -34,6 +34,7 @@ export default {
     forParent: 'For parents',
     hello: 'Hello',
     comingSoon: 'Coming soon',
+    delete: 'Delete',
   },
 
   landing: {
@@ -287,6 +288,7 @@ export default {
     stopReading: 'I’m done',
     analyzing: 'Listening to your reading…',
     micUnavailable: 'Microphone isn’t available. You can continue with text exercises.',
+    micEnglish: 'The microphone listens in English. Practice words are in English.',
     tapMode: 'Tap words as you read',
     tapModeHint: 'No mic? Tap each word after you say it.',
     analysisTitle: 'Great effort!',
@@ -455,6 +457,7 @@ export default {
     sizeSm: 'Small',
     sizeMd: 'Medium',
     sizeLg: 'Large',
+    sizeXl: 'Extra large',
     reducedMotion: 'Reduced motion',
     reducedMotionSub: 'Calmer animations',
     childProfile: 'Child profile',
@@ -718,6 +721,7 @@ export default {
     notFound: 'This page took a nap.',
     notFoundSub: 'Let’s head back and continue the adventure.',
     goHome: 'Go home',
+    saveFailed: 'This device is full. Progress may not be saved.',
   },
 
   toast: {
