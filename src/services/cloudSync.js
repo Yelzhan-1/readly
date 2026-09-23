@@ -35,12 +35,14 @@ let timer = null;
 let pushing = false;
 let pendingState = null;
 let pushRetries = 0;
+let latestState = null;
 
 export function scheduleCloudPush(state) {
   if (cloudMode() === 'off') return;
+  latestState = state;
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => {
-    pushState(state).catch((err) => {
+    pushState(latestState || state).catch((err) => {
       console.warn('[cloud] push skipped', err?.message || err);
     });
   }, 700);
@@ -48,11 +50,12 @@ export function scheduleCloudPush(state) {
 
 function runQueued(state, { retry = false, delay = 0 } = {}) {
   setTimeout(() => {
+    const next = latestState || state;
     if (pushing || cloudMode() === 'off') {
-      pendingState = state;
+      if (!pendingState) pendingState = next;
       return;
     }
-    pushState(state, { retry }).catch((err) => {
+    pushState(next, { retry }).catch((err) => {
       console.warn('[cloud] push skipped', err?.message || err);
     });
   }, delay);
@@ -95,8 +98,10 @@ async function ensureChildId(user, profile, map, lang) {
 
 export async function pushState(state, { retry = false } = {}) {
   if (cloudMode() === 'off') return { pushed: false };
+  if (!retry) latestState = state;
+  const snapshot = latestState || state;
   if (pushing) {
-    pendingState = state;
+    pendingState = snapshot;
     return { pushed: false, reason: 'queued' };
   }
   if (!retry) pushRetries = 0;
@@ -108,14 +113,14 @@ export async function pushState(state, { retry = false } = {}) {
     const map = readJson(mapKey(user.id));
     const cursor = readJson(cursorKey(user.id));
 
-    for (const profile of state.profiles || []) {
-      const childId = await ensureChildId(user, profile, map, state.lang);
+    for (const profile of snapshot.profiles || []) {
+      const childId = await ensureChildId(user, profile, map, snapshot.lang);
       const { error } = await supabase
         .from('child_profiles')
         .update({
           display_name: profile.name || 'Child',
           age: profile.age || null,
-          locale: state.lang || 'ru',
+          locale: snapshot.lang || 'ru',
           interests: profile.interests || [],
           theme: profile.mascot || null,
           demo: Boolean(profile.demo),
@@ -145,7 +150,7 @@ export async function pushState(state, { retry = false } = {}) {
       }
     }
 
-    for (const story of state.stories || []) {
+    for (const story of snapshot.stories || []) {
       const childId = map[story.owner];
       if (!childId) continue;
       const storyKey = `story:${story.id}`;
@@ -176,15 +181,19 @@ export async function pushState(state, { retry = false } = {}) {
     console.warn('[cloud] push skipped', err?.message || err);
     if (!pendingState && pushRetries < 2) {
       pushRetries += 1;
-      pendingState = state;
-      followUpRetry = true;
+      pendingState = latestState || snapshot;
+      followUpRetry = pendingState === snapshot;
     }
     return { pushed: false, reason: 'error' };
   } finally {
     pushing = false;
+    if (latestState && latestState !== snapshot && !pendingState) {
+      pendingState = latestState;
+      followUpRetry = false;
+    }
     if (pendingState) {
-      const next = pendingState;
-      const asRetry = followUpRetry;
+      const next = latestState || pendingState;
+      const asRetry = followUpRetry && next === snapshot;
       pendingState = null;
       runQueued(next, { retry: asRetry, delay: asRetry ? 800 : 0 });
     }
