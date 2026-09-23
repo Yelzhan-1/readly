@@ -17,8 +17,40 @@ export function emptySkills() {
   return s;
 }
 
+/** Fill arrays and skill counters so a partial cloud profile cannot crash the app. */
+export function normalizeProfile(profile) {
+  if (!profile || typeof profile !== 'object') return profile;
+  const skills = emptySkills();
+  const incoming =
+    profile.learning && profile.learning.skills && typeof profile.learning.skills === 'object'
+      ? profile.learning.skills
+      : {};
+  SKILLS.forEach((k) => {
+    const row = incoming[k];
+    skills[k] = {
+      attempts: Number(row && row.attempts) || 0,
+      correct: Number(row && row.correct) || 0,
+    };
+  });
+  const learning = profile.learning && typeof profile.learning === 'object' ? profile.learning : {};
+  profile.history = Array.isArray(profile.history) ? profile.history : [];
+  profile.worlds = Array.isArray(profile.worlds) ? profile.worlds : [];
+  profile.badges = Array.isArray(profile.badges) ? profile.badges : [];
+  profile.stars = Number(profile.stars) || 0;
+  profile.learning = {
+    ...learning,
+    difficulty: learning.difficulty || 1,
+    skills,
+    errorLog: Array.isArray(learning.errorLog) ? learning.errorLog : [],
+    difficultWords: Array.isArray(learning.difficultWords) ? learning.difficultWords : [],
+    masteredWords: Array.isArray(learning.masteredWords) ? learning.masteredWords : [],
+    recent: Array.isArray(learning.recent) ? learning.recent : [],
+  };
+  return profile;
+}
+
 export function skillAccuracy(profile, skill) {
-  const s = profile.learning.skills[skill];
+  const s = profile?.learning?.skills?.[skill];
   if (!s || !s.attempts) return null;
   return s.correct / s.attempts;
 }
@@ -27,7 +59,7 @@ export function overallAccuracy(profile, skills = SKILLS) {
   let a = 0;
   let c = 0;
   skills.forEach((k) => {
-    const s = profile.learning.skills[k];
+    const s = profile?.learning?.skills?.[k];
     if (s) {
       a += s.attempts;
       c += s.correct;
@@ -46,7 +78,7 @@ export function accuracyMap(profile) {
 
 export function recentAccuracy(profile, days = 7) {
   const since = Date.now() - days * 86400000;
-  const items = profile.history.filter((h) => h.at >= since);
+  const items = (profile.history || []).filter((h) => h.at >= since);
   if (!items.length) return null;
   const ok = items.filter((h) => h.ok).length;
   return ok / items.length;
@@ -59,7 +91,7 @@ export function weeklyAccuracy(profile, startDaysAgo, endDaysAgo = 0) {
   const to = new Date();
   to.setDate(to.getDate() - endDaysAgo);
   to.setHours(23, 59, 59, 999);
-  const items = profile.history.filter((h) => h.at >= from.getTime() && h.at <= to.getTime());
+  const items = (profile.history || []).filter((h) => h.at >= from.getTime() && h.at <= to.getTime());
   if (!items.length) return null;
   return items.filter((h) => h.ok).length / items.length;
 }
@@ -94,8 +126,9 @@ export function focusErrorType(profile) {
 export function weakestSkill(profile) {
   let worst = null;
   let worstVal = 1.1;
+  const skills = profile?.learning?.skills || emptySkills();
   SKILLS.forEach((k) => {
-    const s = profile.learning.skills[k];
+    const s = skills[k];
     if (s && s.attempts >= 3) {
       const val = s.correct / s.attempts;
       if (val < worstVal) {
@@ -106,7 +139,7 @@ export function weakestSkill(profile) {
   });
   if (worst) return worst;
   // not enough data → prefer letter recognition first
-  const first = SKILLS.find((k) => profile.learning.skills[k].attempts < 3);
+  const first = SKILLS.find((k) => (skills[k]?.attempts || 0) < 3);
   return first || 'spelling';
 }
 
@@ -186,6 +219,7 @@ function adaptDifficulty(profile, ok) {
  * payload: { module, skill, kind, expected, actual, word, hints, durationSec, stars, analysis? }
  */
 export function applyExerciseResult(profile, payload) {
+  normalizeProfile(profile);
   const {
     module = 'practice',
     skill = 'spelling',
@@ -277,10 +311,12 @@ export function applyExerciseResult(profile, payload) {
 
 /** Award stars outside a graded exercise (story reading, bonuses). */
 export function giveStars(profile, n) {
+  normalizeProfile(profile);
   return { profile, events: award(profile, n) };
 }
 
 export function recordSession(profile, { module, correct = 0, total = 0, stars = 0, durationSec = 0 }) {
+  normalizeProfile(profile);
   const events = [];
   profile.sessions = profile.sessions || [];
   pushCapped(
@@ -294,6 +330,7 @@ export function recordSession(profile, { module, correct = 0, total = 0, stars =
 }
 
 export function markQuestItem(profile, itemId) {
+  normalizeProfile(profile);
   const events = [];
   const today = todayKey();
   if (!profile.dailyQuest || profile.dailyQuest.date !== today) {
@@ -316,6 +353,7 @@ export function markQuestItem(profile, itemId) {
 }
 
 export function resetDailyQuest(profile) {
+  normalizeProfile(profile);
   const today = todayKey();
   if (!profile.dailyQuest || profile.dailyQuest.date !== today) {
     profile.dailyQuest = {
@@ -333,28 +371,29 @@ export function questProgress(profile) {
 }
 
 export function derivedProfile(profile) {
-  const level = levelForStars(profile.stars);
-  const next = nextLevel(profile.stars);
-  const acc = accuracyMap(profile);
+  const safe = normalizeProfile({ ...(profile || {}) });
+  const level = levelForStars(safe.stars);
+  const next = nextLevel(safe.stars);
+  const acc = accuracyMap(safe);
   return {
     level,
     next,
     levelPercent: next
       ? clamp(
-          ((profile.stars - level.minStars) / (next.minStars - level.minStars)) * 100,
+          ((safe.stars - level.minStars) / (next.minStars - level.minStars)) * 100,
           0,
           100
         )
       : 100,
     accuracies: acc,
-    dueWords: srsDue(profile.learning.difficultWords || []).map((x) => x.word),
-    currentWorld: WORLDS.find((w) => profile.worlds.includes(w.id)) || WORLDS[0],
+    dueWords: srsDue(safe.learning.difficultWords || []).map((x) => x.word),
+    currentWorld: WORLDS.find((w) => safe.worlds.includes(w.id)) || WORLDS[0],
   };
 }
 
 export function learningTimeSeconds(profile, days = 7) {
   const since = Date.now() - days * 86400000;
-  return profile.history
+  return (profile.history || [])
     .filter((h) => h.at >= since)
     .reduce((sum, h) => sum + (h.durationSec || 0), 0);
 }

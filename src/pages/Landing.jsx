@@ -133,7 +133,7 @@ export default function Landing() {
       <footer className="container" style={{ paddingBottom: 30 }}>
         <p className="small muted center" style={{ margin: 0 }}>
           Readly · {profile ? `${profile.name} · ` : ''}
-          {t('common.demoMode')} · PIN 1234
+          {t('common.demoMode')}
         </p>
       </footer>
     </div>

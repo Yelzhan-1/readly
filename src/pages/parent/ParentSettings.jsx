@@ -149,6 +149,7 @@ export default function ParentSettings() {
                   </option>
                 ))}
               </select>
+              <span className="small muted">{t('parent.settingsGoalsHint')}</span>
             </div>
 
             <div className="field">
@@ -218,20 +219,18 @@ export default function ParentSettings() {
             </div>
 
             <div style={{ marginTop: 20 }}>
-              <label className="row-between" htmlFor="ps-rem" style={{ cursor: 'pointer' }}>
+              <div className="row-between">
                 <span>
-                  <strong style={{ display: 'block' }}>{t('parent.settingsReminder')}</strong>
+                  <strong style={{ display: 'block' }}>
+                    {t('parent.settingsReminder')}{' '}
+                    <span className="chip">{t('common.comingSoon')}</span>
+                  </strong>
                   <span className="small muted">{t('parent.settingsReminderSub')}</span>
                 </span>
-                <span className="switch" role="switch" aria-checked={!!s.reminder}>
-                  <input
-                    id="ps-rem"
-                    type="checkbox"
-                    checked={!!s.reminder}
-                    onChange={(e) => updateSettings({ reminder: e.target.checked })}
-                  />
+                <span className="switch" role="switch" aria-checked="false" aria-disabled="true">
+                  <input id="ps-rem" type="checkbox" checked={false} disabled />
                 </span>
-              </label>
+              </div>
             </div>
 
             <div style={{ marginTop: 16 }}>

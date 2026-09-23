@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
-import { questProgress } from '../../services/profileService.js';
 import Button from '../../components/ui/Button.jsx';
 
 const ITEMS = [
@@ -15,7 +14,7 @@ const ITEMS = [
 export default function Learn() {
   const t = useT();
   const navigate = useNavigate();
-  const { profile } = useApp();
+  const { profile, settings } = useApp();
 
   useEffect(() => {
     if (!profile) navigate('/profiles', { replace: true });
@@ -24,9 +23,13 @@ export default function Learn() {
 
   if (!profile) return null;
 
-  const quest = questProgress(profile);
+  const goals = Array.isArray(settings?.goals) && settings.goals.length
+    ? settings.goals
+    : ['letters', 'reading', 'writing'];
+  const questItems = ITEMS.filter((item) => item.id === 'game' || goals.includes(item.id));
   const items = profile.dailyQuest?.items || {};
-  const totalMin = ITEMS.reduce((s, i) => s + i.minutes, 0);
+  const visibleDone = questItems.filter((item) => items[item.id]).length;
+  const totalMin = questItems.reduce((s, i) => s + i.minutes, 0);
 
   return (
     <div className="page-enter">
@@ -34,13 +37,13 @@ export default function Learn() {
         <div>
           <h1 style={{ marginBottom: 4 }}>{t('quest.title')}</h1>
           <p className="sub" style={{ margin: 0 }}>
-            {t('quest.subtitle', { minutes: totalMin })} · {t('home.questOf', { done: quest.done, total: quest.total })}
+            {t('quest.subtitle', { minutes: totalMin })} · {t('home.questOf', { done: visibleDone, total: questItems.length })}
           </p>
         </div>
         <span className="chip chip--sun">⭐ {profile.stars}</span>
       </div>
 
-      {quest.done >= quest.total && (
+      {visibleDone >= questItems.length && questItems.length > 0 && (
         <div className="feedback feedback--great" style={{ marginBottom: 16 }} role="status">
           <span className="feedback__emoji">🎉</span>
           <div>
@@ -51,7 +54,7 @@ export default function Learn() {
       )}
 
       <div className="quest-list">
-        {ITEMS.map((item) => {
+        {questItems.map((item) => {
           const done = !!items[item.id];
           return (
             <button

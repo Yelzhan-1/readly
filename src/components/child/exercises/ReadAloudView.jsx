@@ -13,13 +13,13 @@ import {
    and honest demo simulation when neither is usable. */
 export default function ReadAloudView({ ex, locked = false, onSubmit }) {
   const t = useT();
-  const { profile, lang } = useApp();
+  const { profile, lang, settings } = useApp();
   const { say } = useSpeech();
   const words = String(ex.sentence || ex.answer || '').split(/\s+/).filter(Boolean);
 
   const [phase, setPhase] = useState('idle'); // idle | recording | done | micError
   const [interim, setInterim] = useState('');
-  const [tapMode, setTapMode] = useState(false);
+  const [tapMode, setTapMode] = useState(() => settings.tapMode === true);
   const [tapIdx, setTapIdx] = useState(0);
   const [tapDone, setTapDone] = useState(false);
   const recRef = useRef(null);
@@ -29,14 +29,14 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
   useEffect(() => {
     setPhase('idle');
     setInterim('');
-    setTapMode(false);
+    setTapMode(settings.tapMode === true);
     setTapIdx(0);
     setTapDone(false);
     transcriptRef.current = '';
     return () => {
       if (recRef.current) recRef.current.stop();
     };
-  }, [ex.uid]);
+  }, [ex.uid, settings.tapMode]);
 
   const finishWithTranscript = (extraWords = []) => {
     const duration = Math.max(4, Math.round((Date.now() - startRef.current) / 1000));

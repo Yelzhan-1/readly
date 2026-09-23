@@ -158,7 +158,7 @@ export function simulateReading(expectedSentence, profile) {
 }
 
 function recentReadingAccuracy(profile) {
-  const s = profile.learning.skills.reading;
+  const s = profile?.learning?.skills?.reading;
   if (!s || !s.attempts) return 0.75;
   return Math.max(0.5, Math.min(0.95, s.correct / s.attempts));
 }

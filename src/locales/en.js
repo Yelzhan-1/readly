@@ -33,6 +33,7 @@ export default {
     level: 'Level',
     forParent: 'For parents',
     hello: 'Hello',
+    comingSoon: 'Coming soon',
   },
 
   landing: {
@@ -561,6 +562,7 @@ export default {
     goalWriting: 'Writing',
     goalLetters: 'Letters',
     goalAll: 'Everything',
+    settingsGoalsHint: 'Today’s quest on Learn shows these goals. The word game stays available.',
     settingsSession: 'Session length',
     settingsSessionHint: 'How long a learning set should feel',
     sessionShort: 'Short (5 min)',
@@ -592,7 +594,7 @@ export default {
     settingsTextSize: 'Text size',
     settingsMotion: 'Reduced motion',
     settingsReminder: 'Daily learning reminder',
-    settingsReminderSub: 'A gentle nudge on the home screen',
+    settingsReminderSub: 'Coming soon. Readly does not send reminders yet.',
     saveChanges: 'Save changes',
     saved: 'Saved ✓',
     exitToChild: 'Exit to child mode',

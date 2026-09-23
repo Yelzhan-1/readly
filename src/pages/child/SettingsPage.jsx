@@ -163,7 +163,7 @@ export default function SettingsPage() {
 
       <div className="card card--soft" style={{ marginTop: 16 }}>
         <p className="small muted" style={{ margin: 0 }}>
-          Readly · {t('common.demoMode')} · v1.0 · PIN 1234 · {lang.toUpperCase()}
+          Readly · {t('common.demoMode')} · v1.0 · {lang.toUpperCase()}
         </p>
       </div>
     </div>

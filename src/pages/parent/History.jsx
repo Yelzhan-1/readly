@@ -14,7 +14,8 @@ export default function ParentHistory() {
   const [limit, setLimit] = useState(PAGE);
 
   if (!profile) return null;
-  const rows = (profile.history || []).slice(0, limit);
+  const history = profile.history || [];
+  const rows = history.slice(0, limit);
 
   return (
     <div className="page-enter">
@@ -23,7 +24,7 @@ export default function ParentHistory() {
           <h1>{t('parent.historyTitle')}</h1>
           <p>{t('parent.historySub')}</p>
         </div>
-        <span className="chip">{t('parent.attempts', { n: profile.history.length })}</span>
+        <span className="chip">{t('parent.attempts', { n: history.length })}</span>
       </div>
 
       <div className="panel">
@@ -63,7 +64,7 @@ export default function ParentHistory() {
               </tbody>
             </table>
 
-            {limit < profile.history.length && (
+            {limit < history.length && (
               <div className="row" style={{ justifyContent: 'center', marginTop: 16 }}>
                 <Button variant="soft" onClick={() => setLimit((l) => l + PAGE)}>
                   {t('common.seeAll')} ↓

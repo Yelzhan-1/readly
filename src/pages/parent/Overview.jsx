@@ -35,8 +35,8 @@ export default function ParentOverview() {
   const insights = generateInsights(profile);
   const week = dailyAccuracy(profile, 7);
   const weekAcc = weeklyAccuracy(profile, 6, 0);
-  const reading = profile.learning.skills.reading;
-  const writing = profile.learning.skills.writing;
+  const reading = profile.learning?.skills?.reading;
+  const writing = profile.learning?.skills?.writing;
   const errors = commonErrors(profile, 5);
   const due = srsDue(profile.learning.difficultWords || []);
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { useLearning } from '../../hooks/useLearning.js';
+import { useSpeech } from '../../hooks/useSpeech.js';
 import { classify } from '../../services/errorAnalyzer.js';
 import { buildFeedback, starsForResult } from '../../services/feedbackService.js';
 import { FeedbackCard, HintCard } from '../ui/Feedback.jsx';
@@ -41,6 +42,7 @@ export default function SessionRunner({
   const navigate = useNavigate();
   const { settings, profile } = useApp();
   const hintsOn = settings.hints !== false;
+  const { say } = useSpeech();
   const { buildSet, recordExercise, finishSession } = useLearning();
 
   const [items, setItems] = useState(
@@ -67,6 +69,13 @@ export default function SessionRunner({
     },
     []
   );
+
+  useEffect(() => {
+    if (phase !== 'feedback' || !feedback || settings.speakFeedback === false) return;
+    const title = t(feedback.titleKey, feedback.titleVars);
+    const body = t(feedback.textKey, feedback.textVars);
+    say(`${title}. ${body}`);
+  }, [phase, feedback, settings.speakFeedback]);
 
   const next = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);

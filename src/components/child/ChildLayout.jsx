@@ -81,6 +81,15 @@ export default function ChildLayout() {
           <button
             type="button"
             className="pill-stat"
+            onClick={() => navigate('/settings')}
+            title={t('nav.settings')}
+            aria-label={t('nav.settings')}
+          >
+            ⚙️
+          </button>
+          <button
+            type="button"
+            className="pill-stat"
             onClick={() => navigate('/parent')}
             title={t('nav.parent')}
           >

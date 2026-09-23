@@ -33,6 +33,7 @@ export default {
     level: 'Уровень',
     forParent: 'Для родителей',
     hello: 'Привет',
+    comingSoon: 'Скоро',
   },
 
   landing: {
@@ -561,6 +562,7 @@ export default {
     goalWriting: 'Письмо',
     goalLetters: 'Буквы',
     goalAll: 'Всё сразу',
+    settingsGoalsHint: 'Сегодняшнее задание в разделе «Учить» показывает эти цели. Словоигра остаётся.',
     settingsSession: 'Длительность занятия',
     settingsSessionHint: 'Насколько длинным ощущается набор',
     sessionShort: 'Короткое (5 мин)',
@@ -592,7 +594,7 @@ export default {
     settingsTextSize: 'Размер текста',
     settingsMotion: 'Меньше анимаций',
     settingsReminder: 'Ежедневное напоминание',
-    settingsReminderSub: 'Мягкий сигнал на главном экране',
+    settingsReminderSub: 'Скоро. Readly пока не отправляет напоминания.',
     saveChanges: 'Сохранить изменения',
     saved: 'Сохранено ✓',
     exitToChild: 'Выйти в детский режим',

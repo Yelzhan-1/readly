@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { loadState, saveState, clearState } from '../services/storage.js';
 import { createDemoState } from '../data/demoSeed.js';
-import { resetDailyQuest } from '../services/profileService.js';
+import { normalizeProfile, resetDailyQuest } from '../services/profileService.js';
 import { pullCloudState, scheduleCloudPush } from '../services/cloudSync.js';
 import { uid } from '../utils/random.js';
 
@@ -17,7 +17,7 @@ const AppCtx = createContext(null);
 
 function freshQuests(state) {
   const clone = JSON.parse(JSON.stringify(state));
-  clone.profiles = (clone.profiles || []).map((p) => resetDailyQuest(p));
+  clone.profiles = (clone.profiles || []).map((p) => resetDailyQuest(normalizeProfile(p)));
   return clone;
 }
 
@@ -102,7 +102,7 @@ function reducer(state, action) {
       if (!action.profiles?.length) return state;
       return {
         ...state,
-        profiles: action.profiles,
+        profiles: action.profiles.map((p) => normalizeProfile({ ...p })),
         activeProfileId: action.activeProfileId || action.profiles[0]?.id || state.activeProfileId,
         stories: Array.isArray(action.stories) ? action.stories : state.stories,
       };

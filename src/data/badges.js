@@ -4,7 +4,7 @@ export const BADGES = [
     icon: '👣',
     nameKey: 'badges.firstSteps',
     descKey: 'badges.firstStepsD',
-    test: (p) => p.history.length >= 1,
+    test: (p) => (p.history || []).length >= 1,
   },
   {
     id: 'questDay',
@@ -32,14 +32,14 @@ export const BADGES = [
     icon: '🧠',
     nameKey: 'badges.wordWhiz',
     descKey: 'badges.wordWhizD',
-    test: (p) => p.learning.masteredWords.length >= 10,
+    test: (p) => (p.learning?.masteredWords || []).length >= 10,
   },
   {
     id: 'perfect',
     icon: '💯',
     nameKey: 'badges.perfect',
     descKey: 'badges.perfectD',
-    test: (p) => p.badges.includes('__perfect_seen'),
+    test: (p) => (p.badges || []).includes('__perfect_seen'),
   },
 ];
 

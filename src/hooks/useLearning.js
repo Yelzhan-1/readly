@@ -9,17 +9,18 @@ import {
   recordSession,
   markQuestItem,
   giveStars,
+  normalizeProfile,
 } from '../services/profileService.js';
 import { generateSet } from '../services/adaptiveEngine.js';
 import { generateStory } from '../services/storyGenerator.js';
 
 function clone(p) {
-  return JSON.parse(JSON.stringify(p));
+  return normalizeProfile(JSON.parse(JSON.stringify(p)));
 }
 
 function withParentDifficulty(profile, settings) {
   if (!profile) return null;
-  return { ...profile, parentDifficulty: settings?.difficulty || 'auto' };
+  return { ...normalizeProfile({ ...profile }), parentDifficulty: settings?.difficulty || 'auto' };
 }
 
 export function useLearning() {

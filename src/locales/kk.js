@@ -33,6 +33,7 @@ export default {
     level: 'Деңгей',
     forParent: 'Ата-аналарға',
     hello: 'Сәлем',
+    comingSoon: 'Жақында',
   },
 
   landing: {
@@ -561,6 +562,7 @@ export default {
     goalWriting: 'Жазу',
     goalLetters: 'Әріптер',
     goalAll: 'Барлығы',
+    settingsGoalsHint: '«Үйрену» бөліміндегі бүгінгі тапсырма осы мақсаттарды көрсетеді. Сөз ойыны қалады.',
     settingsSession: 'Сессия ұзақтығы',
     settingsSessionHint: 'Топтама қаншалықты ұзақ болсын',
     sessionShort: 'Қысқа (5 мин)',
@@ -592,7 +594,7 @@ export default {
     settingsTextSize: 'Мәтін өлшемі',
     settingsMotion: 'Аз қозғалыс',
     settingsReminder: 'Күнделікті еске салу',
-    settingsReminderSub: 'Басты беттегі жұмсақ нұсқау',
+    settingsReminderSub: 'Жақында. Readly әзірге еске салмайды.',
     saveChanges: 'Өзгерістерді сақтау',
     saved: 'Сақталды ✓',
     exitToChild: 'Бала режиміне шығу',

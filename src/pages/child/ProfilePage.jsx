@@ -154,7 +154,10 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="row" style={{ justifyContent: 'center', marginTop: 20, gap: 10 }}>
+      <div className="row" style={{ justifyContent: 'center', marginTop: 20, gap: 10, flexWrap: 'wrap' }}>
+        <Button variant="primary" onClick={() => navigate('/settings')}>
+          ⚙️ {t('nav.settings')}
+        </Button>
         <Button variant="ghost" onClick={() => navigate('/profiles')}>
           👥 {t('settings.switchProfile')}
         </Button>
