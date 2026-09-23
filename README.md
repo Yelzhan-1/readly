@@ -1,11 +1,20 @@
 # Readly — Adaptive AI Tutor for Literacy
 
+**Live demo:** https://yelzhan-1.github.io/readly/
+
 Readly is a hackathon-ready web app that adapts reading and writing practice to each child's level, mistakes, and interests. Children explore worlds, complete daily quests, and earn stars; parents unlock a calm dashboard with honest, non-clinical insights.
 
 - **Languages:** English · Русский · Қазақша (full UI/instructions/feedback)
 - **Child mode:** diagnostic → adaptive quest sessions → reading → writing → AI-generated stories → progress
 - **Parent mode:** PIN gate (`1234`) → overview, progress, skills, history, settings
 - **On-device by default:** `localStorage` key `readly.state.v1` and parent PIN `1234`. If `VITE_SUPABASE_URL` and the anon key are set, a parent can sign in on the settings page and sync under RLS. `VITE_READLY_CLOUD=0` keeps data on the device even then. Never put `service_role` in the frontend.
+
+## Known limitations
+
+- Handwriting on the canvas is graded from the typed answer, not from OCR.
+- Readly Coach shows **LIVE** only after the deployed `coach` edge function answers. Without that, the badge stays **DEMO**. No model API key is shipped in the browser.
+- The parent “daily reminder” control is labeled Coming soon and does not send notifications.
+- Supabase is optional. The public site is the on-device demo (Ayan, PIN 1234). Never put a `service_role` key in the frontend.
 
 ## Quick start
 
@@ -62,6 +71,6 @@ supabase/          migration matching project readly + coach edge function
 
 ### Accessibility
 
-Text size (sm/md/lg), reduced motion, tap mode, keyboard-focusable controls, aria labels, never colour-only status.
+Text size (sm/md/lg/xl), reduced motion, tap mode, keyboard-focusable controls, aria labels, never colour-only status.
 
 _Readly is a practice tool. Metrics are app-generated learning signals — not a clinical or medical assessment._
