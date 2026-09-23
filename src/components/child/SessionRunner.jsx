@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
+import { useApp } from '../../store/AppContext.jsx';
 import { useLearning } from '../../hooks/useLearning.js';
 import { classify } from '../../services/errorAnalyzer.js';
 import { buildFeedback, starsForResult } from '../../services/feedbackService.js';
@@ -12,6 +13,7 @@ import LetterGridView from './exercises/LetterGridView.jsx';
 import OrderLettersView from './exercises/OrderLettersView.jsx';
 import SpellView from './exercises/SpellView.jsx';
 import ReadAloudView from './exercises/ReadAloudView.jsx';
+import CoachPanel from '../ui/CoachPanel.jsx';
 
 function renderView(ex, props) {
   switch (ex.type) {
@@ -37,6 +39,8 @@ export default function SessionRunner({
 }) {
   const t = useT();
   const navigate = useNavigate();
+  const { settings, profile } = useApp();
+  const hintsOn = settings.hints !== false;
   const { buildSet, recordExercise, finishSession } = useLearning();
 
   const [items, setItems] = useState(
@@ -312,7 +316,7 @@ export default function SessionRunner({
               },
             })}
 
-            {phase === 'active' && ex.hints?.length > 0 && (
+            {phase === 'active' && hintsOn && ex.hints?.length > 0 && (
               <div style={{ marginTop: 16 }}>
                 <HintCard
                   hints={ex.hints}
@@ -335,6 +339,9 @@ export default function SessionRunner({
                   title={t(feedback.titleKey, feedback.titleVars)}
                   text={t(feedback.textKey, feedback.textVars)}
                 />
+                {!lastAnalysis?.ok && (
+                  <CoachPanel kind="child" analysis={lastAnalysis} profile={profile} />
+                )}
                 <div className="session__actions">
                   {!lastAnalysis?.ok ? (
                     <>

@@ -195,7 +195,7 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
               {t('reading.selfSome')}
             </button>
             <button type="button" className="btn btn--soft" onClick={useSimulation} disabled={locked}>
-              🎮 {t('common.practice')} (demo)
+              🎮 {t('common.practice')} {t('common.demoTag')}
             </button>
           </div>
         </div>
@@ -204,7 +204,7 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
       {!tapMode && phase === 'idle' && (
         <div className="session__actions">
           <button type="button" className="btn btn--soft btn--sm" onClick={useSimulation} disabled={locked}>
-            🎮 {t('common.practice')} (demo)
+            🎮 {t('common.practice')} {t('common.demoTag')}
           </button>
         </div>
       )}

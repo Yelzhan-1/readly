@@ -12,6 +12,7 @@ import { generateInsights, resolveInsightVars, dailyAccuracy } from '../../servi
 import { ParentStatCard, Insight } from '../../components/ui/ParentStat.jsx';
 import { srsDue } from '../../services/srs.js';
 import { formatDuration } from '../../utils/dates.js';
+import CoachPanel from '../../components/ui/CoachPanel.jsx';
 
 export default function ParentOverview() {
   const t = useT();
@@ -50,6 +51,8 @@ export default function ParentOverview() {
         </div>
         <span className="chip chip--demo">{t('common.demoMode')}</span>
       </div>
+
+      <CoachPanel kind="parent" profile={profile} />
 
       <div className="parent-grid">
         <div className="col-3">

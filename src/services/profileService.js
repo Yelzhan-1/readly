@@ -110,11 +110,20 @@ export function weakestSkill(profile) {
   return first || 'spelling';
 }
 
-export function difficultyOf(profile, pref = 'auto') {
-  const base = profile.learning.difficulty || 1;
-  if (pref === 'easy') return clamp(base - 1, 1, 4);
-  if (pref === 'hard') return clamp(base + 1, 1, 4);
-  return base;
+export function difficultyOf(profile, pref) {
+  const base = profile.learning?.difficulty || 1;
+  const mode = pref || profile?.parentDifficulty || 'auto';
+  if (mode === 'easy') return clamp(base - 1, 1, 4);
+  if (mode === 'hard') return clamp(base + 1, 1, 4);
+  return clamp(base, 1, 4);
+}
+
+/** Parent session length scales a module's exercise count. */
+export function sessionItemCount(base, length = 'medium') {
+  const n = Number(base) || 4;
+  if (length === 'short') return Math.max(2, Math.round(n * 0.5));
+  if (length === 'long') return Math.max(n + 1, Math.round(n * 1.5));
+  return n;
 }
 
 function pushCapped(arr, item, cap) {

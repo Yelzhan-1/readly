@@ -5,15 +5,23 @@ import { useApp } from '../../store/AppContext.jsx';
 import { buildWritingExercise } from '../../services/adaptiveEngine.js';
 import SessionRunner from '../../components/child/SessionRunner.jsx';
 
+const LENGTH_LEVELS = {
+  short: [1, 2],
+  medium: [1, 2, 3],
+  long: [1, 2, 3, 4],
+};
+
 export default function Writing() {
   const t = useT();
   const navigate = useNavigate();
-  const { profile } = useApp();
+  const { profile, settings } = useApp();
 
   const items = useMemo(() => {
     if (!profile) return [];
-    return [1, 2, 3].map((lv) => buildWritingExercise(profile, lv));
-  }, [profile]);
+    const tuned = { ...profile, parentDifficulty: settings.difficulty || 'auto' };
+    const levels = LENGTH_LEVELS[settings.sessionLength] || LENGTH_LEVELS.medium;
+    return levels.map((lv) => buildWritingExercise(tuned, lv));
+  }, [profile, settings.difficulty, settings.sessionLength]);
 
   if (!profile) return null;
 
@@ -30,7 +38,7 @@ export default function Writing() {
       </div>
 
       <SessionRunner
-        key={profile.id + (profile.learning?.difficulty || 1)}
+        key={`${profile.id}-${profile.learning?.difficulty || 1}-${settings.difficulty || 'auto'}-${settings.sessionLength || 'medium'}`}
         module="writing"
         size={3}
         questItem="writing"

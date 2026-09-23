@@ -5,7 +5,7 @@ Readly is a hackathon-ready web app that adapts reading and writing practice to 
 - **Languages:** English · Русский · Қазақша (full UI/instructions/feedback)
 - **Child mode:** diagnostic → adaptive quest sessions → reading → writing → AI-generated stories → progress
 - **Parent mode:** PIN gate (`1234`) → overview, progress, skills, history, settings
-- **Everything stays on-device:** `localStorage` key `readly.state.v1`, no API keys in the frontend
+- **On-device by default:** `localStorage` key `readly.state.v1`. Optional Supabase sync when `VITE_READLY_CLOUD=1` and a parent is signed in. The anon key never includes `service_role`.
 
 ## Quick start
 
@@ -22,6 +22,17 @@ npm run check:i18n  # locale key parity + t() usage check
 - Parent PIN: **1234**.
 - New profiles run a friendly 6-step diagnostic, then unlock Dino World.
 
+## Jury path (about 5 minutes)
+
+1. Open the app and tap **Jury path: Ayan, then parent PIN 1234**.
+2. Choose **Ayan**. Home shows today’s quest, stars, and interest world (original mascots only).
+3. Continue the quest. Miss a word on purpose: Readly Coach shows a **DEMO** tip. With `VITE_SUPABASE_URL` and the anon key set, the same panel shows **LIVE** after the `coach` edge function answers.
+4. Open **Stories** and generate one. The story helper stays inside the chosen interest.
+5. Open a story and tap at least one word, then finish.
+6. Settings → **For parents** asks for PIN **1234** (it does not unlock by itself). Overview shows a plain-language Coach note. Settings can shorten the session or shift difficulty; **Reset demo** also clears the parent unlock.
+
+Readly is a practice tool. The dashboard numbers are app learning signals, not a clinical assessment.
+
 ## Architecture
 
 ```
@@ -31,7 +42,9 @@ src/
   store/           AppContext reducer + persistence
   services/        adaptiveEngine · profileService · errorAnalyzer · srs ·
                    storyGenerator · feedbackService · speechService ·
-                   handwritingService · aiService · insights
+                   handwritingService · aiService · aiCoach · cloudSync · insights
+  lib/             supabase client (anon key, dual-mode)
+supabase/          migration matching project readly + coach edge function
   data/            words · stories · worlds · badges · interests · demoSeed
   hooks/           useLearning · useNotify · useSpeech
   components/      ui/ · child/ · parent/
@@ -43,6 +56,7 @@ src/
 ### AI / speech notes
 
 - Default **DEMO MODE**: local deterministic engines; set `VITE_READLY_AI_URL` (server-side key!) to enable a real LLM with automatic fallback.
+- **Readly Coach** is DEMO without Supabase env. With the anon key it calls the `coach` edge function and badges the answer **LIVE**, falling back to **DEMO** if the call fails.
 - Read-aloud uses Web Speech API when available, tap-to-read mode otherwise, plus an explicitly labelled demo simulation.
 - Handwriting is a real drawing canvas; grading falls back to typed input (labelled honestly in the UI).
 

@@ -7,6 +7,7 @@ import { INTERESTS } from '../../data/interests.js';
 import Button from '../../components/ui/Button.jsx';
 import { LoadingScreen } from '../../components/ui/Empty.jsx';
 import { Mascot } from '../../components/ui/Mascots.jsx';
+import CoachPanel from '../../components/ui/CoachPanel.jsx';
 
 export default function Stories() {
   const t = useT();
@@ -40,7 +41,7 @@ export default function Stories() {
   const mine = state.stories.filter((s) => s.owner === profile.id);
 
   return (
-    <div className="page-enter">
+    <div className="page-enter stories-page">
       <div className="section-title">
         <div>
           <h1 style={{ marginBottom: 4 }}>{t('stories.title')}</h1>
@@ -50,6 +51,12 @@ export default function Stories() {
         </div>
         <Mascot id={profile.mascot} size={64} />
       </div>
+
+      <CoachPanel
+        kind="story"
+        profile={profile}
+        topic={t(`interests.${topic}`)}
+      />
 
       <div className="card">
         <div className="field">

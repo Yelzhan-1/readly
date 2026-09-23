@@ -11,7 +11,8 @@ export function useSpeech() {
 
   const say = (text, opts = {}) => {
     if (!enabled || !text) return false;
-    return speak(text, { lang, ...opts });
+    const rate = opts.rate ?? (settings.slowSpeech ? 0.72 : 0.95);
+    return speak(text, { lang, pitch: opts.pitch, onEnd: opts.onEnd, rate });
   };
 
   const stop = () => stopSpeaking();

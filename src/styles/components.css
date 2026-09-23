@@ -71,7 +71,7 @@
 }
 .btn--soft:hover { box-shadow: var(--sh-sm); }
 
-.btn--lg { min-height: 62px; font-size: 1.2rem; padding: 16px 38px; }
+.btn--lg { min-height: 68px; font-size: 1.24rem; padding: 16px 36px; border-radius: 22px; }
 .btn--sm { min-height: 42px; font-size: 0.95rem; padding: 8px 18px; }
 .btn--block { width: 100%; }
 .btn--icon { min-width: 52px; padding: 10px; }
@@ -886,4 +886,40 @@
 @media (max-width: 640px) {
   .skill-row { grid-template-columns: 1fr auto; }
   .skill-row .progress { grid-column: 1 / -1; }
+}
+
+/* ---------- Readly Coach ---------- */
+.coach-panel {
+  background: linear-gradient(160deg, #fff7ef, #f4eefe);
+  border: 1px solid #f0d9c8;
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  box-shadow: var(--sh-sm);
+  animation: fadeUp 0.35s ease both;
+}
+
+.coach-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.coach-panel__head strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.coach-panel__lead {
+  margin: 0 0 4px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  font-size: 0.92rem;
+}
+
+.coach-panel__text {
+  margin: 0;
+  font-weight: 650;
+  color: var(--ink);
 }

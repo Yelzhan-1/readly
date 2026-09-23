@@ -4,6 +4,7 @@ import { useT, useI18n } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { INTERESTS } from '../../data/interests.js';
 import Button from '../../components/ui/Button.jsx';
+import { cloudMode } from '../../services/cloudSync.js';
 
 const GOALS = [
   ['letters', 'parent.goalLetters'],
@@ -29,6 +30,8 @@ export default function ParentSettings() {
   const navigate = useNavigate();
   const { profile, mutateProfile, updateSettings, setParentUnlocked, state, pushToast } = useApp();
   const s = state.settings;
+  const cloud = cloudMode();
+  const cloudKey = cloud === 'sync' ? 'parent.cloudSync' : cloud === 'ready' ? 'parent.cloudReady' : 'parent.cloudLocal';
 
   const [name, setName] = useState(profile?.name || '');
   const [age, setAge] = useState(String(profile?.age || 6));
@@ -58,6 +61,7 @@ export default function ParentSettings() {
         <div>
           <h1>{t('parent.settingsTitle')}</h1>
           <p>{t('parent.settingsSub')}</p>
+          <span className="chip" style={{ marginTop: 8 }}>{t(cloudKey)}</span>
         </div>
         <Button
           variant="ghost"
@@ -180,6 +184,7 @@ export default function ParentSettings() {
                   </option>
                 ))}
               </select>
+              <span className="small muted">{t('parent.settingsDifficultyHint')}</span>
             </div>
 
             <div className="row" style={{ gap: 10, marginTop: 8 }}>

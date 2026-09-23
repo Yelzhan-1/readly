@@ -23,7 +23,7 @@ export default function SettingsPage() {
   const t = useT();
   const { lang } = useI18n();
   const navigate = useNavigate();
-  const { state, updateSettings, resetDemo, setParentUnlocked } = useApp();
+  const { state, updateSettings, resetDemo } = useApp();
   const s = state.settings;
   const [confirm, setConfirm] = useState(false);
 
@@ -120,13 +120,7 @@ export default function SettingsPage() {
           <Button variant="ghost" onClick={() => navigate('/profiles')}>
             👥 {t('settings.switchProfile')}
           </Button>
-          <Button
-            variant="soft"
-            onClick={() => {
-              setParentUnlocked(true);
-              navigate('/parent');
-            }}
-          >
+          <Button variant="soft" onClick={() => navigate('/parent')}>
             🔒 {t('common.forParent')}
           </Button>
         </div>

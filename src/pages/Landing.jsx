@@ -49,6 +49,9 @@ export default function Landing() {
               <span>{t('landing.trust2')}</span>
               <span>{t('landing.trust3')}</span>
             </div>
+            <button type="button" className="demo-path" onClick={start}>
+              {t('landing.demoPath')}
+            </button>
           </div>
 
           <div className="hero-art" aria-hidden="true">

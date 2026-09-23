@@ -92,6 +92,25 @@
 
 .landing__trust span { display: inline-flex; gap: 6px; align-items: center; }
 
+.demo-path {
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  cursor: pointer;
+  background: var(--sun-soft);
+  color: #6d4e12;
+  font-weight: 800;
+  border-radius: var(--r-pill);
+  padding: 12px 18px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  box-shadow: var(--sh-sm);
+  transition: transform 0.16s ease;
+}
+
+.demo-path:hover { transform: translateY(-2px); }
+
 /* hero illustration */
 .hero-art {
   position: relative;
@@ -518,8 +537,8 @@
   padding: 26px;
   color: #fff;
   background:
-    radial-gradient(420px 200px at 90% -20%, rgba(255, 255, 255, 0.22), transparent 60%),
-    linear-gradient(135deg, #ff8a57 0%, var(--primary) 55%, #f4571f 100%);
+    radial-gradient(420px 200px at 90% -20%, rgba(255, 255, 255, 0.42), transparent 60%),
+    linear-gradient(145deg, #f09474 0%, #e36a62 48%, #c97a9e 100%);
   box-shadow: var(--sh-lg);
   overflow: hidden;
   display: flex;
@@ -533,7 +552,14 @@
   bottom: -14px;
   width: 150px;
   opacity: 0.95;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.16));
+  animation: floaty 4.8s ease-in-out infinite;
+}
+
+.home-page .adventure-card .btn {
+  min-height: 72px;
+  font-size: 1.28rem;
+  padding: 16px 28px;
 }
 
 .adventure-card .label {
@@ -569,8 +595,10 @@
 .world-card {
   border-radius: var(--r-xl);
   padding: 22px;
-  background: linear-gradient(160deg, #2b3157, #1c2040);
-  color: #fff;
+  background:
+    radial-gradient(280px 140px at 100% 0%, rgba(255, 255, 255, 0.75), transparent 60%),
+    linear-gradient(165deg, #ffe7c7 0%, #f6d4ea 55%, #e7f6ef 100%);
+  color: var(--ink);
   box-shadow: var(--sh-md);
   display: flex;
   flex-direction: column;
@@ -580,10 +608,14 @@
   min-height: 160px;
 }
 
-.world-card .world-emoji { font-size: 3rem; line-height: 1; }
-.world-card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9aa1cd; font-weight: 800; }
+.world-card .world-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  animation: floaty 5.4s ease-in-out infinite;
+}
+.world-card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9a6b4f; font-weight: 800; }
 .world-card h3 { margin: 0; font-size: 1.35rem; }
-.world-card .sub { color: #b9bdd6; font-size: 0.9rem; font-weight: 600; margin: 0; }
+.world-card .sub { color: var(--ink-soft); font-size: 0.9rem; font-weight: 600; margin: 0; }
 
 .quick-actions {
   display: grid;
@@ -752,11 +784,20 @@
 
 .icon-btn:hover { border-color: var(--primary); background: var(--primary-soft); }
 
+.session .card { animation: fadeUp 0.35s ease both; }
+
 .session__actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.session__actions .btn--primary,
+.session .btn--primary.btn--lg {
+  min-height: 70px;
+  font-size: 1.22rem;
+  padding: 14px 28px;
 }
 
 /* ---------- Reading ---------- */
@@ -783,6 +824,17 @@
 }
 
 .story-card:hover { transform: translateY(-5px); box-shadow: var(--sh-md); }
+.story-card { animation: fadeUp 0.45s ease both; }
+.story-card:nth-child(2) { animation-delay: 0.06s; }
+.story-card:nth-child(3) { animation-delay: 0.12s; }
+
+.stories-page .btn--primary {
+  min-height: 72px;
+  font-size: 1.25rem;
+  width: 100%;
+}
+
+.stories-page .coach-panel { margin-bottom: 16px; }
 
 .story-card__art {
   height: 110px;

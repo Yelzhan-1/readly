@@ -9,6 +9,7 @@ import React, {
 import { loadState, saveState, clearState } from '../services/storage.js';
 import { createDemoState } from '../data/demoSeed.js';
 import { resetDailyQuest } from '../services/profileService.js';
+import { pullCloudState, scheduleCloudPush } from '../services/cloudSync.js';
 import { uid } from '../utils/random.js';
 
 const STORAGE_KEY_PARENT = 'readly.parent.unlocked';
@@ -87,11 +88,24 @@ function reducer(state, action) {
 
     case 'resetDemo': {
       clearState();
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem(STORAGE_KEY_PARENT);
+      }
       return freshQuests({
         ...createDemoState(),
         parentUnlocked: false,
         toasts: [],
       });
+    }
+
+    case 'hydrateCloud': {
+      if (!action.profiles?.length) return state;
+      return {
+        ...state,
+        profiles: action.profiles,
+        activeProfileId: action.activeProfileId || action.profiles[0]?.id || state.activeProfileId,
+        stories: Array.isArray(action.stories) ? action.stories : state.stories,
+      };
     }
 
     default:
@@ -105,11 +119,30 @@ export function AppProvider({ children }) {
   /* persistence */
   useEffect(() => {
     saveState(state);
+    scheduleCloudPush(state);
   }, [state.lang, state.settings, state.profiles, state.activeProfileId, state.stories]);
+
+  useEffect(() => {
+    let cancel = false;
+    pullCloudState()
+      .then((remote) => {
+        if (cancel || !remote?.profiles?.length) return;
+        dispatch({
+          type: 'hydrateCloud',
+          profiles: remote.profiles,
+          stories: remote.stories,
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   /* accessibility prefs on <html> */
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.toggle('text-sm', state.settings.textSize === 'sm');
     root.classList.toggle('text-lg', state.settings.textSize === 'lg');
     root.classList.toggle('text-xl', state.settings.textSize === 'xl');
     root.classList.toggle('reduced-motion', !!state.settings.reducedMotion);

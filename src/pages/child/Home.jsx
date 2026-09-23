@@ -26,7 +26,7 @@ export default function Home() {
   const questDone = quest.done >= quest.total;
 
   return (
-    <div className="page-enter">
+    <div className="page-enter home-page">
       <div className="home-head">
         <div>
           <h1>{t('home.greeting', { name: profile.name })}</h1>

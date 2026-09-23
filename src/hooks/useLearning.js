@@ -17,8 +17,13 @@ function clone(p) {
   return JSON.parse(JSON.stringify(p));
 }
 
+function withParentDifficulty(profile, settings) {
+  if (!profile) return null;
+  return { ...profile, parentDifficulty: settings?.difficulty || 'auto' };
+}
+
 export function useLearning() {
-  const { profile, mutateProfile, addStory, pushToast } = useApp();
+  const { profile, settings, mutateProfile, addStory, pushToast } = useApp();
   const notify = useNotify();
 
   const recordExercise = useCallback(
@@ -53,10 +58,11 @@ export function useLearning() {
 
   const buildSet = useCallback(
     (module, size) => {
-      if (!profile) return [];
-      return generateSet(profile, module, size);
+      const tuned = withParentDifficulty(profile, settings);
+      if (!tuned) return [];
+      return generateSet(tuned, module, size);
     },
-    [profile]
+    [profile, settings]
   );
 
   const makeStory = useCallback(
