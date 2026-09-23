@@ -816,6 +816,7 @@
 .story-card {
   display: flex;
   flex-direction: column;
+  font: inherit;
   gap: 8px;
   padding: 20px;
   border-radius: var(--r-lg);

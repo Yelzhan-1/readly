@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { useLearning } from '../../hooks/useLearning.js';
@@ -124,12 +124,7 @@ export default function Stories() {
           </div>
           <div className="story-grid">
             {mine.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className="story-card"
-                onClick={() => navigate(`/read/${s.id}`)}
-              >
+              <Link key={s.id} to={`/read/${s.id}`} className="story-card">
                 <span
                   className="story-card__art"
                   style={{ background: s.tint || 'var(--sun-soft)' }}
@@ -142,7 +137,7 @@ export default function Stories() {
                   {t('reading.custom')} · {Math.max(1, Math.ceil((s.sentences || []).join(' ').split(/\s+/).length / 40))}{' '}
                   {t('reading.min')}
                 </p>
-              </button>
+              </Link>
             ))}
           </div>
         </>
