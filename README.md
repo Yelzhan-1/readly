@@ -1,6 +1,8 @@
 # Readly — Adaptive AI Tutor for Literacy
 
-**Live demo:** https://yelzhan-1.github.io/readly/
+**Intended public demo (after merge to `main`):** https://yelzhan-1.github.io/readly/
+
+The GitHub Pages deploy from the PR branch failed. `.github/workflows/pages.yml` runs only on push to `main` (and manual `workflow_dispatch`). Until that runs, use the local demo below.
 
 Readly is a hackathon-ready web app that adapts reading and writing practice to each child's level, mistakes, and interests. Children explore worlds, complete daily quests, and earn stars; parents unlock a calm dashboard with honest, non-clinical insights.
 
@@ -14,7 +16,7 @@ Readly is a hackathon-ready web app that adapts reading and writing practice to 
 - Handwriting on the canvas is graded from the typed answer, not from OCR.
 - Readly Coach shows **LIVE** only after the deployed `coach` edge function answers. Without that, the badge stays **DEMO**. No model API key is shipped in the browser.
 - The parent “daily reminder” control is labeled Coming soon and does not send notifications.
-- Supabase is optional. The public site is the on-device demo (Ayan, PIN 1234). Never put a `service_role` key in the frontend.
+- Supabase is optional. The local demo is on-device (Ayan, PIN 1234). The Pages site is published from `main` only; the overnight deploy from this branch did not succeed. Never put a `service_role` key in the frontend.
 
 ## Quick start
 

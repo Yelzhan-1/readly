@@ -33,9 +33,11 @@ Readly — адаптивный тренажёр чтения и письма д
 
 ## Публичный демо-сайт
 
-https://yelzhan-1.github.io/readly/
+Задуманный адрес после публикации: https://yelzhan-1.github.io/readly/
 
-Это статика GitHub Pages (проектный путь `/readly/`). Облако Supabase на публичном сайте не обязательно: демо Ayan и PIN 1234 работают из браузера. Деплой: workflow `.github/workflows/pages.yml` после пуша в `main`.
+Ночной деплой с ветки PR не прошёл (job `deploy` упал). Workflow `.github/workflows/pages.yml` больше не запускается с feature-ветки: публикация только пушем в `main` или вручную `workflow_dispatch` после мержа. Это утреннее действие пользователя. Пока сайт не выложен, жюри смотрит локально.
+
+Это статика GitHub Pages (проектный путь `/readly/`). Облако Supabase на публичном сайте не обязательно: демо Ayan и PIN 1234 работают из браузера.
 
 ## Демо-путь для жюри
 
@@ -79,7 +81,7 @@ Readly показывает, как детский продукт может а�
 - LIVE Coach работает только с задеплоенной edge-функцией `coach` и anon-ключом. Без этого бейдж остаётся DEMO. Отдельный ключ модели в репозиторий не кладётся.
 - Напоминание «каждый день» не отправляет push. Это Coming soon.
 - Подтверждение email родителя зависит от настроек Auth в Supabase.
-- Публичный демо-сайт: https://yelzhan-1.github.io/readly/ (GitHub Pages, без серверного логина).
+- Публикация: `.github/workflows/pages.yml` только с `main`. Ночной деплой с ветки PR не удался; адрес https://yelzhan-1.github.io/readly/ ещё не подтверждён как живой.
 - Уязвимости npm в инструментах сборки не блокируют демо, но перед боевым запуском их стоит пересмотреть (`npm audit`).
 
 ---
@@ -90,10 +92,12 @@ Readly is an adaptive reading and writing trainer for children about 5–7. The 
 
 The loop is Observe → Understand → Adapt. Exercise results update the profile. The next set follows parent difficulty, session length, weak skills, and due words. Story context uses original interest themes only.
 
-**Live demo:** https://yelzhan-1.github.io/readly/
+**Public site (after a push to `main`):** https://yelzhan-1.github.io/readly/
+
+The overnight Pages deploy from this PR branch failed. `.github/workflows/pages.yml` now runs only on push to `main`, plus manual `workflow_dispatch`. Publishing is a morning action after merge. Until then, use the local demo.
 
 **Local:** `npm i && npm run dev`, then http://127.0.0.1:5173/. Child **Ayan**. Parent PIN **1234** (shown only on the parent gate). Settings are on the child profile and in the header.
 
 **Storage:** no Supabase keys → `localStorage` and Coach DEMO. Anon key + parent sign-in → Postgres with RLS. The browser never receives `service_role`. A parent can link only a child profile they own. Cloud hydrate keeps the newer copy and never drops the local demo profile. Story edits queue if a push is already running; story updates are allowed by RLS.
 
-**Honest limits:** handwriting is graded from typed text; LIVE Coach requires the deployed `coach` edge function; the daily reminder is labeled Coming soon; practice content is English on purpose while the UI is English, Russian, and Kazakh. The public site is the offline demo at https://yelzhan-1.github.io/readly/.
+**Honest limits:** handwriting is graded from typed text; LIVE Coach requires the deployed `coach` edge function; the daily reminder is labeled Coming soon; practice content is English on purpose while the UI is English, Russian, and Kazakh. The intended public site is the offline demo at https://yelzhan-1.github.io/readly/, published only from `main`. That overnight deploy did not succeed.
