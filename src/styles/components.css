@@ -888,6 +888,55 @@
   .skill-row .progress { grid-column: 1 / -1; }
 }
 
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(160px 120px at var(--sx, 50%) var(--sy, 0%), rgba(255, 255, 255, 0.55), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.spotlight:hover::after { opacity: 1; }
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.activity-item {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.activity-item i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.activity-item--miss i { background: var(--rose); }
+
+.cloud-account { margin-top: 8px; max-width: 420px; }
+
 /* ---------- Readly Coach ---------- */
 .coach-panel {
   background: linear-gradient(160deg, #fff7ef, #f4eefe);

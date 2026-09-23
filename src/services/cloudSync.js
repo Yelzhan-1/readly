@@ -1,17 +1,18 @@
-/* Optional cloud sync. localStorage stays the source of truth.
-   Push/pull run only when VITE_READLY_CLOUD=1 and a parent session exists.
+/* Optional cloud sync. localStorage stays the source of truth for the demo.
+   When the anon URL + key are set, a signed-in parent syncs under RLS.
+   VITE_READLY_CLOUD=0 forces on-device mode even if a key is present.
    Missing env, a failed request, or no login all fall back silently. */
 
 import { supabase, supabaseConfigured } from '../lib/supabase.js';
 
 const viteEnv = import.meta.env || {};
-const FLAG = String(viteEnv.VITE_READLY_CLOUD || '') === '1';
+const forceLocal = String(viteEnv.VITE_READLY_CLOUD ?? '') === '0';
 const MAP_KEY = 'readly.cloud.ids.v1';
 const CURSOR_KEY = 'readly.cloud.cursor.v1';
 
 export function cloudMode() {
-  if (!supabaseConfigured || !supabase) return 'off';
-  return FLAG ? 'sync' : 'ready';
+  if (forceLocal || !supabaseConfigured || !supabase) return 'off';
+  return 'ready';
 }
 
 function readJson(key) {
@@ -34,7 +35,7 @@ let timer = null;
 let pushing = false;
 
 export function scheduleCloudPush(state) {
-  if (cloudMode() !== 'sync') return;
+  if (cloudMode() === 'off') return;
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => {
     pushState(state).catch((err) => {
@@ -79,7 +80,7 @@ async function ensureChildId(user, profile, map, lang) {
 }
 
 export async function pushState(state) {
-  if (cloudMode() !== 'sync' || pushing) return { pushed: false };
+  if (cloudMode() === 'off' || pushing) return { pushed: false };
   pushing = true;
   try {
     const user = await currentUser();
@@ -157,7 +158,7 @@ export async function pushState(state) {
 }
 
 export async function pullCloudState() {
-  if (cloudMode() !== 'sync') return null;
+  if (cloudMode() === 'off') return null;
   const user = await currentUser();
   if (!user) return null;
   const { data, error } = await supabase
@@ -189,4 +190,26 @@ export async function pullCloudState() {
     .map((s) => s.meta)
     .filter((meta) => meta && typeof meta === 'object' && meta.id);
   return { profiles, stories: restored };
+}
+
+export async function getParentSession() {
+  if (cloudMode() === 'off' || !supabase) return null;
+  const { data, error } = await supabase.auth.getSession();
+  if (error) return null;
+  return data?.session || null;
+}
+
+export async function signInParent(email, password) {
+  if (!supabase) return { error: new Error('unconfigured') };
+  return supabase.auth.signInWithPassword({ email, password });
+}
+
+export async function signUpParent(email, password) {
+  if (!supabase) return { error: new Error('unconfigured') };
+  return supabase.auth.signUp({ email, password });
+}
+
+export async function signOutParent() {
+  if (!supabase) return;
+  await supabase.auth.signOut();
 }

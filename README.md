@@ -5,7 +5,7 @@ Readly is a hackathon-ready web app that adapts reading and writing practice to 
 - **Languages:** English · Русский · Қазақша (full UI/instructions/feedback)
 - **Child mode:** diagnostic → adaptive quest sessions → reading → writing → AI-generated stories → progress
 - **Parent mode:** PIN gate (`1234`) → overview, progress, skills, history, settings
-- **On-device by default:** `localStorage` key `readly.state.v1`. Optional Supabase sync when `VITE_READLY_CLOUD=1` and a parent is signed in. The anon key never includes `service_role`.
+- **On-device by default:** `localStorage` key `readly.state.v1` and parent PIN `1234`. If `VITE_SUPABASE_URL` and the anon key are set, a parent can sign in on the settings page and sync under RLS. `VITE_READLY_CLOUD=0` keeps data on the device even then. Never put `service_role` in the frontend.
 
 ## Quick start
 
