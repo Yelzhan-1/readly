@@ -434,12 +434,18 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 18px;
-  background: rgba(255, 249, 242, 0.88);
+  background: rgba(255, 244, 234, 0.92);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(239, 228, 214, 0.7);
 }
 
-.child-top__stats { display: flex; gap: 8px; align-items: center; }
+.child-top__stats { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+
+@media (max-width: 720px) {
+  .child-top { flex-wrap: wrap; padding: 10px 12px; }
+  .child-top__stats { width: 100%; }
+  .lang-select button { min-width: 36px; padding: 4px 8px; }
+}
 
 .pill-stat {
   display: inline-flex;
