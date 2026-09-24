@@ -1,0 +1,170 @@
+{
+  "headHint": "see OVERNIGHT_HARD_QA.md",
+  "base": "http://127.0.0.1:5173",
+  "summary": {
+    "pass": 29,
+    "fail": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "note": 1,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "networkFails": 0
+  },
+  "results": [
+    {
+      "name": "landing loads",
+      "status": "PASS",
+      "detail": "Learning that grows with every child"
+    },
+    {
+      "name": "i18n lang switch",
+      "status": "PASS",
+      "detail": "Learning that grows with every child -> Обучение, которое растёт вместе с каждым ребёнком"
+    },
+    {
+      "name": "select Ayan",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/home"
+    },
+    {
+      "name": "child home",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/home"
+    },
+    {
+      "name": "Coach DEMO badge",
+      "status": "NOTE",
+      "detail": "not visible on home/learn — may be expected if not demo coach"
+    },
+    {
+      "name": "/home",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/learn",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/read",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/write",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/stories",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/progress",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/profile",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/settings",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "Settings via UI",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/settings"
+    },
+    {
+      "name": "child progress renders",
+      "status": "PASS",
+      "detail": "Readly ⭐ 132 🔥 4 EN RU ҚАЗ ⚙️ 🔒 Your progress Look how far you’ve come! ⭐132"
+    },
+    {
+      "name": "Writing session smoke",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/home"
+    },
+    {
+      "name": "session-letters",
+      "status": "PASS",
+      "detail": "loaded"
+    },
+    {
+      "name": "session-sounds",
+      "status": "PASS",
+      "detail": "loaded"
+    },
+    {
+      "name": "session-words",
+      "status": "PASS",
+      "detail": "loaded"
+    },
+    {
+      "name": "session-reading",
+      "status": "PASS",
+      "detail": "loaded"
+    },
+    {
+      "name": "reader open story",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/read/dino-big-day"
+    },
+    {
+      "name": "wrong PIN stays on gate",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/parent"
+    },
+    {
+      "name": "PIN 1234 opens parent",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/parent/overview"
+    },
+    {
+      "name": "/parent/progress",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/parent/skills",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/parent/history",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "/parent/settings",
+      "status": "PASS",
+      "detail": "renders"
+    },
+    {
+      "name": "settings no bypass",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/parent"
+    },
+    {
+      "name": "reset demo",
+      "status": "PASS",
+      "detail": "clicked reset; url=http://127.0.0.1:5173/settings"
+    },
+    {
+      "name": "post-reset Ayan available",
+      "status": "PASS",
+      "detail": "http://127.0.0.1:5173/home"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkFails": []
+}

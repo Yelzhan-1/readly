@@ -1,0 +1,37 @@
+{
+  "findings": [
+    {
+      "sev": "PASS",
+      "name": "open story card",
+      "detail": "http://127.0.0.1:5173/read/dino-big-day"
+    },
+    {
+      "sev": "PASS",
+      "name": "reader word tap",
+      "detail": "ok"
+    },
+    {
+      "sev": "NOTE",
+      "name": "Coach DEMO in session",
+      "detail": "not visible on /session/reading at load"
+    },
+    {
+      "sev": "PASS",
+      "name": "writing interact",
+      "detail": "tag=CANVAS url=http://127.0.0.1:5173/write"
+    },
+    {
+      "sev": "PASS",
+      "name": "parent history",
+      "detail": "Readly 📊 Overview 📈 Progress 🎯 Skills 🕘 History ⚙️ Settings 👋 Exit to child mode Ayan · Demo Mode History Recent e"
+    },
+    {
+      "sev": "PASS",
+      "name": "parent Demo Mode chip",
+      "detail": "Ayan · Demo Mode"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkFails": []
+}
