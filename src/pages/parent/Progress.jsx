@@ -10,10 +10,12 @@ export default function ParentProgress() {
   const t = useT();
   const { profile } = useApp();
 
-  const thisWeek = profile ? weeklyAccuracy(profile, 6, 0) : null;
-  const lastWeek = profile ? weeklyAccuracy(profile, 13, 7) : null;
-  const snaps = profile ? skillSnapshots(profile) : [];
-  const week = profile ? dailyAccuracy(profile, 7) : [];
+  const history = (profile && profile.history) || [];
+  const viewed = profile ? { ...profile, history } : null;
+  const thisWeek = viewed ? weeklyAccuracy(viewed, 6, 0) : null;
+  const lastWeek = viewed ? weeklyAccuracy(viewed, 13, 7) : null;
+  const snaps = viewed ? skillSnapshots(viewed) : [];
+  const week = viewed ? dailyAccuracy(viewed, 7) : [];
 
   return (
     <div className="page-enter">

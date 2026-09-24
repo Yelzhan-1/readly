@@ -13,13 +13,13 @@ import {
    and honest demo simulation when neither is usable. */
 export default function ReadAloudView({ ex, locked = false, onSubmit }) {
   const t = useT();
-  const { profile, lang } = useApp();
+  const { profile, lang, settings } = useApp();
   const { say } = useSpeech();
   const words = String(ex.sentence || ex.answer || '').split(/\s+/).filter(Boolean);
 
   const [phase, setPhase] = useState('idle'); // idle | recording | done | micError
   const [interim, setInterim] = useState('');
-  const [tapMode, setTapMode] = useState(false);
+  const [tapMode, setTapMode] = useState(() => settings.tapMode === true);
   const [tapIdx, setTapIdx] = useState(0);
   const [tapDone, setTapDone] = useState(false);
   const recRef = useRef(null);
@@ -29,14 +29,14 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
   useEffect(() => {
     setPhase('idle');
     setInterim('');
-    setTapMode(false);
+    setTapMode(settings.tapMode === true);
     setTapIdx(0);
     setTapDone(false);
     transcriptRef.current = '';
     return () => {
       if (recRef.current) recRef.current.stop();
     };
-  }, [ex.uid]);
+  }, [ex.uid, settings.tapMode]);
 
   const finishWithTranscript = (extraWords = []) => {
     const duration = Math.max(4, Math.round((Date.now() - startRef.current) / 1000));
@@ -56,6 +56,8 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
     startRef.current = Date.now();
     setInterim('');
     setPhase('recording');
+    // Practice words and stories are English. The mic stays en-US on purpose;
+    // the UI language only changes labels and spoken feedback.
     const rec = createRecognizer({
       lang: 'en-US',
       onFinal: (text) => {
@@ -137,6 +139,9 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
           <button type="button" className="btn btn--primary btn--lg" onClick={startMic} disabled={locked}>
             🎤 {t('reading.startReading')}
           </button>
+          <p className="small muted center" style={{ margin: 0, flexBasis: '100%' }}>
+            {t('reading.micEnglish')}
+          </p>
           <button type="button" className="btn btn--ghost" onClick={() => { setTapMode(true); startRef.current = Date.now(); }} disabled={locked}>
             👆 {t('reading.tapMode')}
           </button>
@@ -195,7 +200,7 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
               {t('reading.selfSome')}
             </button>
             <button type="button" className="btn btn--soft" onClick={useSimulation} disabled={locked}>
-              🎮 {t('common.practice')} (demo)
+              🎮 {t('common.practice')} {t('common.demoTag')}
             </button>
           </div>
         </div>
@@ -204,7 +209,7 @@ export default function ReadAloudView({ ex, locked = false, onSubmit }) {
       {!tapMode && phase === 'idle' && (
         <div className="session__actions">
           <button type="button" className="btn btn--soft btn--sm" onClick={useSimulation} disabled={locked}>
-            🎮 {t('common.practice')} (demo)
+            🎮 {t('common.practice')} {t('common.demoTag')}
           </button>
         </div>
       )}

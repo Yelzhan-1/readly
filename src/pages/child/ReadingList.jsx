@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { STORIES } from '../../data/stories.js';
@@ -33,7 +33,6 @@ export default function ReadingList() {
   if (!profile) return null;
 
   const custom = state.stories.filter((s) => s.owner === profile.id);
-  const open = (id) => navigate(`/read/${id}`);
 
   return (
     <div className="page-enter">
@@ -49,7 +48,7 @@ export default function ReadingList() {
 
       <div className="story-grid">
         {STORIES.map((s) => (
-          <button key={s.id} type="button" className="story-card" onClick={() => open(s.id)}>
+          <Link key={s.id} to={`/read/${s.id}`} className="story-card">
             <span className="story-card__art" style={{ background: s.tint }} aria-hidden="true">
               {s.emoji}
             </span>
@@ -58,11 +57,11 @@ export default function ReadingList() {
               {t(`reading.levels.${levelKey(s.level)}`)} · {t('reading.words', { n: storyWords(s) })} ·{' '}
               {storyMinutes(s)} {t('reading.min')}
             </p>
-          </button>
+          </Link>
         ))}
 
         {custom.map((s) => (
-          <button key={s.id} type="button" className="story-card" onClick={() => open(s.id)}>
+          <Link key={s.id} to={`/read/${s.id}`} className="story-card">
             <span className="story-card__art" style={{ background: s.tint || 'var(--sun-soft)' }} aria-hidden="true">
               {s.emoji || '✨'}
             </span>
@@ -70,7 +69,7 @@ export default function ReadingList() {
             <p>
               {t('reading.custom')} · {storyMinutes(s)} {t('reading.min')}
             </p>
-          </button>
+          </Link>
         ))}
       </div>
 

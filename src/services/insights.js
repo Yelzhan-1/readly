@@ -136,7 +136,7 @@ export function skillSnapshots(profile) {
     skill,
     labelKey: SKILL_LABEL_KEYS[skill],
     now: skillAccuracy(profile, skill),
-    attempts: profile.learning.skills[skill]?.attempts || 0,
+    attempts: profile.learning?.skills?.[skill]?.attempts || 0,
     prev: skillWeek(profile, skill, 13, 7),
     week: skillWeek(profile, skill, 6, 0),
   }));

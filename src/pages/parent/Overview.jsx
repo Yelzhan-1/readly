@@ -1,5 +1,5 @@
 import React from 'react';
-import { useT } from '../../i18n/index.jsx';
+import { useT, useI18n } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import {
   derivedProfile,
@@ -7,14 +7,17 @@ import {
   weeklyAccuracy,
   commonErrors,
   errorLabelKey,
+  moduleLabelKey,
 } from '../../services/profileService.js';
 import { generateInsights, resolveInsightVars, dailyAccuracy } from '../../services/insights.js';
 import { ParentStatCard, Insight } from '../../components/ui/ParentStat.jsx';
 import { srsDue } from '../../services/srs.js';
-import { formatDuration } from '../../utils/dates.js';
+import { formatDate, formatDuration } from '../../utils/dates.js';
+import CoachPanel from '../../components/ui/CoachPanel.jsx';
 
 export default function ParentOverview() {
   const t = useT();
+  const { lang } = useI18n();
   const { profile } = useApp();
 
   if (!profile) {
@@ -32,8 +35,8 @@ export default function ParentOverview() {
   const insights = generateInsights(profile);
   const week = dailyAccuracy(profile, 7);
   const weekAcc = weeklyAccuracy(profile, 6, 0);
-  const reading = profile.learning.skills.reading;
-  const writing = profile.learning.skills.writing;
+  const reading = profile.learning?.skills?.reading;
+  const writing = profile.learning?.skills?.writing;
   const errors = commonErrors(profile, 5);
   const due = srsDue(profile.learning.difficultWords || []);
 
@@ -87,6 +90,59 @@ export default function ParentOverview() {
           />
         </div>
 
+        <div className="col-12">
+          <div className="panel">
+            <h2>{t('parent.weeklyChart')}</h2>
+            <p className="panel-sub">{t('parent.weeklyChartSub')}</p>
+            {week.some((x) => x.value != null) ? (
+              <div className="bars">
+                {week.map((day, i) => (
+                  <div className="bars__col" key={i}>
+                    <div className="bars__val">{day.value != null ? `${day.value}%` : '·'}</div>
+                    <div className="bars__bar" style={{ height: `${day.value || 4}%` }}>
+                      {day.n > 0 && <span className="bars__label">{day.label}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="muted" style={{ margin: 0 }}>
+                {t('parent.chartEmpty')}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="col-12">
+          <div className="panel">
+            <h2>{t('parent.activityTitle')}</h2>
+            {(profile.history || []).length ? (
+              <ol className="activity-list">
+                {(profile.history || []).slice(0, 5).map((item) => (
+                  <li key={item.id || item.at} className={item.ok ? 'activity-item' : 'activity-item activity-item--miss'}>
+                    <i aria-hidden="true" />
+                    <span>
+                      <strong>{t(moduleLabelKey(item.module))}</strong>
+                      {item.word ? ` · ${item.word}` : ''}
+                    </span>
+                    <span className="small muted">
+                      {item.ok ? t('parent.resultCorrect') : t('parent.resultPartial')} · {formatDate(item.at, lang)}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="panel-sub" style={{ marginBottom: 0 }}>
+                {t('parent.activityEmpty')}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="col-12">
+          <CoachPanel kind="parent" profile={profile} />
+        </div>
+
         <div className="col-8">
           <div className="panel">
             <h2>💡 {t('parent.overviewTitle')}</h2>
@@ -122,30 +178,7 @@ export default function ParentOverview() {
           </div>
         </div>
 
-        <div className="col-6">
-          <div className="panel">
-            <h2>{t('parent.weeklyChart')}</h2>
-            <p className="panel-sub">{t('parent.weeklyChartSub')}</p>
-            {week.some((x) => x.value != null) ? (
-              <div className="bars">
-                {week.map((day, i) => (
-                  <div className="bars__col" key={i}>
-                    <div className="bars__val">{day.value != null ? `${day.value}%` : '·'}</div>
-                    <div className="bars__bar" style={{ height: `${day.value || 4}%` }}>
-                      {day.n > 0 && <span className="bars__label">{day.label}</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="muted" style={{ margin: 0 }}>
-                {t('parent.chartEmpty')}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="col-6">
+        <div className="col-12">
           <div className="panel">
             <h2>{t('parent.difficultiesTitle')}</h2>
             <p className="panel-sub">{t('parent.difficultiesSub')}</p>

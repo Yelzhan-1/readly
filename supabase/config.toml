@@ -1,0 +1,4 @@
+project_id = "hrlpidapontbnrvmrqzw"
+
+[functions.coach]
+verify_jwt = true

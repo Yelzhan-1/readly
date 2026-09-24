@@ -23,7 +23,7 @@ export default function SettingsPage() {
   const t = useT();
   const { lang } = useI18n();
   const navigate = useNavigate();
-  const { state, updateSettings, resetDemo, setParentUnlocked } = useApp();
+  const { state, updateSettings, resetDemo } = useApp();
   const s = state.settings;
   const [confirm, setConfirm] = useState(false);
 
@@ -99,6 +99,7 @@ export default function SettingsPage() {
             ['sm', t('settings.sizeSm')],
             ['md', t('settings.sizeMd')],
             ['lg', t('settings.sizeLg')],
+            ['xl', t('settings.sizeXl')],
           ].map(([val, lab]) => (
             <button
               key={val}
@@ -120,13 +121,7 @@ export default function SettingsPage() {
           <Button variant="ghost" onClick={() => navigate('/profiles')}>
             👥 {t('settings.switchProfile')}
           </Button>
-          <Button
-            variant="soft"
-            onClick={() => {
-              setParentUnlocked(true);
-              navigate('/parent');
-            }}
-          >
+          <Button variant="soft" onClick={() => navigate('/parent')}>
             🔒 {t('common.forParent')}
           </Button>
         </div>
@@ -169,7 +164,7 @@ export default function SettingsPage() {
 
       <div className="card card--soft" style={{ marginTop: 16 }}>
         <p className="small muted" style={{ margin: 0 }}>
-          Readly · {t('common.demoMode')} · v1.0 · PIN 1234 · {lang.toUpperCase()}
+          Readly · {t('common.demoMode')} · v1.0 · {lang.toUpperCase()}
         </p>
       </div>
     </div>

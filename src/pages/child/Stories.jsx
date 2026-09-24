@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { useLearning } from '../../hooks/useLearning.js';
@@ -7,6 +7,7 @@ import { INTERESTS } from '../../data/interests.js';
 import Button from '../../components/ui/Button.jsx';
 import { LoadingScreen } from '../../components/ui/Empty.jsx';
 import { Mascot } from '../../components/ui/Mascots.jsx';
+import CoachPanel from '../../components/ui/CoachPanel.jsx';
 
 export default function Stories() {
   const t = useT();
@@ -40,7 +41,7 @@ export default function Stories() {
   const mine = state.stories.filter((s) => s.owner === profile.id);
 
   return (
-    <div className="page-enter">
+    <div className="page-enter stories-page">
       <div className="section-title">
         <div>
           <h1 style={{ marginBottom: 4 }}>{t('stories.title')}</h1>
@@ -50,6 +51,12 @@ export default function Stories() {
         </div>
         <Mascot id={profile.mascot} size={64} />
       </div>
+
+      <CoachPanel
+        kind="story"
+        profile={profile}
+        topic={t(`interests.${topic}`)}
+      />
 
       <div className="card">
         <div className="field">
@@ -117,12 +124,7 @@ export default function Stories() {
           </div>
           <div className="story-grid">
             {mine.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className="story-card"
-                onClick={() => navigate(`/read/${s.id}`)}
-              >
+              <Link key={s.id} to={`/read/${s.id}`} className="story-card">
                 <span
                   className="story-card__art"
                   style={{ background: s.tint || 'var(--sun-soft)' }}
@@ -135,7 +137,7 @@ export default function Stories() {
                   {t('reading.custom')} · {Math.max(1, Math.ceil((s.sentences || []).join(' ').split(/\s+/).length / 40))}{' '}
                   {t('reading.min')}
                 </p>
-              </button>
+              </Link>
             ))}
           </div>
         </>

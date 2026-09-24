@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useT } from '../../../i18n/index.jsx';
 import { useSpeech } from '../../../hooks/useSpeech.js';
+import { exerciseContext } from '../../../utils/exerciseContext.js';
 import WritingCanvas from '../WritingCanvas.jsx';
 
 /* Writing exercises: copy, image→word, dictation, cloze, sentence, creative. */
@@ -30,9 +31,8 @@ export default function SpellView({ ex, locked = false, onSubmit }) {
   const isSentence = ex.type === 'sentence' || ex.type === 'creative';
   const instruction = t(ex.instructionKey, ex.instructionVars);
 
-  let contextText = null;
-  if (ex.context?.key) contextText = t(ex.context.key, ex.context.vars);
-  else if (ex.contextPath) contextText = t(ex.contextPath, ex.context.vars);
+  const ctx = exerciseContext(ex);
+  const contextText = ctx ? t(ctx.path, ctx.vars) : null;
 
   const submit = () => {
     const value = typed.trim();

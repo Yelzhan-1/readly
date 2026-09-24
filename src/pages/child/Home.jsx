@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { derivedProfile, questProgress } from '../../services/profileService.js';
+import { BADGES } from '../../data/badges.js';
 import { Mascot } from '../../components/ui/Mascots.jsx';
 import Button from '../../components/ui/Button.jsx';
+import CountUp from '../../components/ui/CountUp.jsx';
 
 export default function Home() {
   const t = useT();
@@ -26,7 +28,7 @@ export default function Home() {
   const questDone = quest.done >= quest.total;
 
   return (
-    <div className="page-enter">
+    <div className="page-enter home-page">
       <div className="home-head">
         <div>
           <h1>{t('home.greeting', { name: profile.name })}</h1>
@@ -85,7 +87,7 @@ export default function Home() {
       </div>
 
       <div className="quick-actions">
-        <button type="button" className="quick-card" onClick={() => navigate('/read')}>
+        <button type="button" className="quick-card spotlight" onMouseMove={moveSpotlight} onClick={() => navigate('/read')}>
           <span className="quick-card__icon" style={{ background: 'var(--sun-soft)' }}>
             📖
           </span>
@@ -94,7 +96,7 @@ export default function Home() {
             <span>{t('home.readSub')}</span>
           </span>
         </button>
-        <button type="button" className="quick-card" onClick={() => navigate('/write')}>
+        <button type="button" className="quick-card spotlight" onMouseMove={moveSpotlight} onClick={() => navigate('/write')}>
           <span className="quick-card__icon" style={{ background: 'var(--primary-soft)' }}>
             ✏️
           </span>
@@ -103,7 +105,7 @@ export default function Home() {
             <span>{t('home.writeSub')}</span>
           </span>
         </button>
-        <button type="button" className="quick-card" onClick={() => navigate('/stories')}>
+        <button type="button" className="quick-card spotlight" onMouseMove={moveSpotlight} onClick={() => navigate('/stories')}>
           <span className="quick-card__icon" style={{ background: 'var(--violet-soft)' }}>
             📚
           </span>
@@ -120,7 +122,7 @@ export default function Home() {
             ⭐
           </span>
           <div>
-            <strong>{profile.stars}</strong>
+            <strong><CountUp to={profile.stars} /></strong>
             <span>{t('home.stars')}</span>
           </div>
         </div>
@@ -143,6 +145,23 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div className="badge-row" aria-label={t('progress.badges')}>
+        {BADGES.filter((b) => profile.badges?.includes(b.id))
+          .slice(0, 4)
+          .map((b) => (
+            <span className="chip chip--sun" key={b.id}>
+              {b.icon} {t(b.nameKey)}
+            </span>
+          ))}
+      </div>
     </div>
   );
+}
+
+function moveSpotlight(event) {
+  const el = event.currentTarget;
+  const rect = el.getBoundingClientRect();
+  el.style.setProperty('--sx', `${event.clientX - rect.left}px`);
+  el.style.setProperty('--sy', `${event.clientY - rect.top}px`);
 }

@@ -4,26 +4,26 @@
 
 :root {
   /* palette */
-  --bg: #fff9f2;
-  --bg-tint-a: rgba(255, 197, 61, 0.16);
-  --bg-tint-b: rgba(23, 184, 166, 0.12);
-  --surface: #ffffff;
-  --surface-2: #fff6ec;
+  --bg: #fff4ea;
+  --bg-tint-a: rgba(255, 176, 140, 0.34);
+  --bg-tint-b: rgba(186, 224, 206, 0.42);
+  --surface: #fffdfb;
+  --surface-2: #fff1e4;
   --ink: #232741;
   --ink-soft: #5d6280;
   --ink-faint: #8d92ac;
   --line: #efe4d6;
   --line-strong: #e3d5c3;
 
-  --primary: #ff7a45;
-  --primary-dark: #ef5f26;
-  --primary-soft: #ffe7d9;
-  --teal: #17b8a6;
-  --teal-soft: #d8f5f1;
-  --violet: #7c6bf2;
-  --violet-soft: #e8e4ff;
-  --sun: #ffc53d;
-  --sun-soft: #fff1cc;
+  --primary: #f08a6a;
+  --primary-dark: #d86a4c;
+  --primary-soft: #ffe4d8;
+  --teal: #5eb8a8;
+  --teal-soft: #e4f6f2;
+  --violet: #b7a6e8;
+  --violet-soft: #f1ebff;
+  --sun: #f6d58a;
+  --sun-soft: #fff4d4;
   --mint: #2fbf83;
   --mint-soft: #dcf6ea;
   --rose: #ff6b8a;
@@ -270,5 +270,6 @@ html.reduced-motion *::after {
 }
 
 /* text size modes applied on <html> */
+html.text-sm { --text-scale: 0.92; }
 html.text-lg { --text-scale: 1.1; }
 html.text-xl { --text-scale: 1.22; }

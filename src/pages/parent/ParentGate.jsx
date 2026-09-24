@@ -66,7 +66,7 @@ export default function ParentGate() {
           <button type="button" onClick={() => press('0')}>
             0
           </button>
-          <button type="button" onClick={() => setPin((p) => p.slice(0, -1))} aria-label="delete">
+          <button type="button" onClick={() => setPin((p) => p.slice(0, -1))} aria-label={t('common.delete')}>
             ⌫
           </button>
         </div>

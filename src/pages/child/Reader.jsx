@@ -307,10 +307,15 @@ export default function Reader() {
             >
               👂 {t('reader.slow')}
             </Button>
-            <Button variant="primary" onClick={finishReading}>
+            <Button variant="primary" onClick={finishReading} disabled={spoken.size < 1 && totalWords > 0}>
               ✓ {t('reader.finishRead')}
             </Button>
           </div>
+          {spoken.size < 1 && totalWords > 0 && (
+            <p className="small muted" style={{ margin: '10px 0 0' }}>
+              {t('reader.needWord')}
+            </p>
+          )}
 
           <div className="row" style={{ gap: 10, marginTop: 18 }}>
             <Mascot id={profile.mascot} size={74} />

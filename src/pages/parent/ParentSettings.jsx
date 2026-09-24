@@ -4,6 +4,7 @@ import { useT, useI18n } from '../../i18n/index.jsx';
 import { useApp } from '../../store/AppContext.jsx';
 import { INTERESTS } from '../../data/interests.js';
 import Button from '../../components/ui/Button.jsx';
+import ParentCloudAccount from '../../components/parent/ParentCloudAccount.jsx';
 
 const GOALS = [
   ['letters', 'parent.goalLetters'],
@@ -58,6 +59,7 @@ export default function ParentSettings() {
         <div>
           <h1>{t('parent.settingsTitle')}</h1>
           <p>{t('parent.settingsSub')}</p>
+          <ParentCloudAccount />
         </div>
         <Button
           variant="ghost"
@@ -147,6 +149,7 @@ export default function ParentSettings() {
                   </option>
                 ))}
               </select>
+              <span className="small muted">{t('parent.settingsGoalsHint')}</span>
             </div>
 
             <div className="field">
@@ -180,6 +183,7 @@ export default function ParentSettings() {
                   </option>
                 ))}
               </select>
+              <span className="small muted">{t('parent.settingsDifficultyHint')}</span>
             </div>
 
             <div className="row" style={{ gap: 10, marginTop: 8 }}>
@@ -215,20 +219,18 @@ export default function ParentSettings() {
             </div>
 
             <div style={{ marginTop: 20 }}>
-              <label className="row-between" htmlFor="ps-rem" style={{ cursor: 'pointer' }}>
+              <div className="row-between">
                 <span>
-                  <strong style={{ display: 'block' }}>{t('parent.settingsReminder')}</strong>
+                  <strong style={{ display: 'block' }}>
+                    {t('parent.settingsReminder')}{' '}
+                    <span className="chip">{t('common.comingSoon')}</span>
+                  </strong>
                   <span className="small muted">{t('parent.settingsReminderSub')}</span>
                 </span>
-                <span className="switch" role="switch" aria-checked={!!s.reminder}>
-                  <input
-                    id="ps-rem"
-                    type="checkbox"
-                    checked={!!s.reminder}
-                    onChange={(e) => updateSettings({ reminder: e.target.checked })}
-                  />
+                <span className="switch" role="switch" aria-checked="false" aria-disabled="true">
+                  <input id="ps-rem" type="checkbox" checked={false} disabled />
                 </span>
-              </label>
+              </div>
             </div>
 
             <div style={{ marginTop: 16 }}>
@@ -259,6 +261,7 @@ export default function ParentSettings() {
                 <option value="sm">{t('settings.sizeSm')}</option>
                 <option value="md">{t('settings.sizeMd')}</option>
                 <option value="lg">{t('settings.sizeLg')}</option>
+                <option value="xl">{t('settings.sizeXl')}</option>
               </select>
             </div>
           </div>

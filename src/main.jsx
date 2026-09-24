@@ -9,9 +9,12 @@ import './styles/components.css';
 import './styles/child.css';
 import './styles/parent.css';
 
+const rawBase = import.meta.env.BASE_URL || '/';
+const basename = rawBase === '/' ? undefined : rawBase.replace(/\/$/, '');
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AppProvider>
         <I18nProvider>
           <App />

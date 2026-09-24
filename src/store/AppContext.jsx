@@ -5,18 +5,26 @@ import React, {
   useMemo,
   useReducer,
   useCallback,
+  useRef,
 } from 'react';
 import { loadState, saveState, clearState } from '../services/storage.js';
 import { createDemoState } from '../data/demoSeed.js';
-import { resetDailyQuest } from '../services/profileService.js';
+import { normalizeProfile, resetDailyQuest } from '../services/profileService.js';
+import { adoptCloudAccount, getParentSession, pullCloudState, scheduleCloudPush } from '../services/cloudSync.js';
+import { mergeHydratedState } from '../services/cloudMerge.js';
+import en from '../locales/en.js';
+import ru from '../locales/ru.js';
+import kk from '../locales/kk.js';
 import { uid } from '../utils/random.js';
+
+const DICT = { en, ru, kk };
 
 const STORAGE_KEY_PARENT = 'readly.parent.unlocked';
 const AppCtx = createContext(null);
 
 function freshQuests(state) {
   const clone = JSON.parse(JSON.stringify(state));
-  clone.profiles = (clone.profiles || []).map((p) => resetDailyQuest(p));
+  clone.profiles = (clone.profiles || []).map((p) => resetDailyQuest(normalizeProfile(p)));
   return clone;
 }
 
@@ -64,7 +72,7 @@ function reducer(state, action) {
 
     case 'mutateProfile': {
       const profiles = state.profiles.map((p) =>
-        p.id === action.id ? action.fn(p) : p
+        p.id === action.id ? { ...action.fn(p), updatedAt: Date.now() } : p
       );
       return { ...state, profiles };
     }
@@ -87,6 +95,9 @@ function reducer(state, action) {
 
     case 'resetDemo': {
       clearState();
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem(STORAGE_KEY_PARENT);
+      }
       return freshQuests({
         ...createDemoState(),
         parentUnlocked: false,
@@ -94,22 +105,72 @@ function reducer(state, action) {
       });
     }
 
+    case 'hydrateCloud': {
+      if (!action.profiles?.length) return state;
+      const merged = mergeHydratedState(state, {
+        profiles: action.profiles,
+        stories: action.stories,
+      });
+      return { ...state, ...merged };
+    }
+
     default:
       return state;
   }
 }
 
+function saveFailedText(lang) {
+  return DICT[lang]?.errors?.saveFailed || DICT.en.errors.saveFailed;
+}
+
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, initState);
+  const saveWarnRef = useRef(false);
 
   /* persistence */
   useEffect(() => {
-    saveState(state);
+    const ok = saveState(state);
+    scheduleCloudPush(state);
+    if (!ok && !saveWarnRef.current) {
+      saveWarnRef.current = true;
+      const id = uid('toast');
+      dispatch({
+        type: 'pushToast',
+        toast: { id, icon: '⚠️', tone: 'warn', text: saveFailedText(state.lang) },
+      });
+      setTimeout(() => dispatch({ type: 'dismissToast', id }), 5200);
+    } else if (ok) {
+      saveWarnRef.current = false;
+    }
   }, [state.lang, state.settings, state.profiles, state.activeProfileId, state.stories]);
+
+  useEffect(() => {
+    let cancel = false;
+    const presentIds = (state.profiles || []).map((profile) => profile.id);
+    getParentSession()
+      .then((session) => {
+        if (cancel || !session?.user) return null;
+        adoptCloudAccount(session.user.id, presentIds);
+        return pullCloudState();
+      })
+      .then((remote) => {
+        if (cancel || !remote?.profiles?.length) return;
+        dispatch({
+          type: 'hydrateCloud',
+          profiles: remote.profiles,
+          stories: remote.stories,
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   /* accessibility prefs on <html> */
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.toggle('text-sm', state.settings.textSize === 'sm');
     root.classList.toggle('text-lg', state.settings.textSize === 'lg');
     root.classList.toggle('text-xl', state.settings.textSize === 'xl');
     root.classList.toggle('reduced-motion', !!state.settings.reducedMotion);
@@ -134,6 +195,14 @@ export function AppProvider({ children }) {
     []
   );
   const resetDemo = useCallback(() => dispatch({ type: 'resetDemo' }), []);
+  const hydrateCloud = useCallback((remote) => {
+    if (!remote?.profiles?.length) return;
+    dispatch({
+      type: 'hydrateCloud',
+      profiles: remote.profiles,
+      stories: remote.stories || [],
+    });
+  }, []);
 
   const pushToast = useCallback((toast) => {
     const id = uid('toast');
@@ -159,6 +228,7 @@ export function AppProvider({ children }) {
       parentUnlocked: state.parentUnlocked,
       setParentUnlocked,
       resetDemo,
+      hydrateCloud,
       toasts: state.toasts,
       pushToast,
       dismissToast,
@@ -174,6 +244,7 @@ export function AppProvider({ children }) {
       addStory,
       setParentUnlocked,
       resetDemo,
+      hydrateCloud,
       pushToast,
       dismissToast,
     ]

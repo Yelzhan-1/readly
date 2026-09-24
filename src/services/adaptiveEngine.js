@@ -478,7 +478,7 @@ export function buildWritingExercise(profile, level) {
   const focusKey = focus ? FOCUS_KEY[focus] : null;
 
   if (level === 1) {
-    const meta = pickTargetWord(profile, { tier: 1, focus: focusKey });
+    const meta = pickTargetWord(profile, { focus: focusKey });
     return {
       uid: uid('ex'),
       type: 'copy',
@@ -493,7 +493,7 @@ export function buildWritingExercise(profile, level) {
     };
   }
   if (level === 2) {
-    const meta = pickTargetWord(profile, { tier: 1 });
+    const meta = pickTargetWord(profile, {});
     return {
       uid: uid('ex'),
       type: 'spellImage',

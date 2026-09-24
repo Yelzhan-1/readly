@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useT } from '../../../i18n/index.jsx';
 import { useSpeech } from '../../../hooks/useSpeech.js';
+import { exerciseContext } from '../../../utils/exerciseContext.js';
 
 /* Multiple-choice exercises: letter finding, word matching, comprehension. */
 export default function ChoiceView({ ex, locked = false, onPick }) {
@@ -15,7 +16,8 @@ export default function ChoiceView({ ex, locked = false, onPick }) {
   }, [ex.uid]);
 
   const instruction = t(ex.instructionKey, ex.instructionVars);
-  const context = ex.contextPath ? t(ex.contextPath, ex.contextVars) : null;
+  const ctx = exerciseContext(ex);
+  const context = ctx ? t(ctx.path, ctx.vars) : null;
   const question = ex.questionKey ? t(ex.questionKey, ex.questionVars) : null;
 
   const handle = (opt) => {

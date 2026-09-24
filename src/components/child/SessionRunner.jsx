@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '../../i18n/index.jsx';
+import { useApp } from '../../store/AppContext.jsx';
 import { useLearning } from '../../hooks/useLearning.js';
+import { useSpeech } from '../../hooks/useSpeech.js';
 import { classify } from '../../services/errorAnalyzer.js';
 import { buildFeedback, starsForResult } from '../../services/feedbackService.js';
 import { FeedbackCard, HintCard } from '../ui/Feedback.jsx';
@@ -12,6 +14,7 @@ import LetterGridView from './exercises/LetterGridView.jsx';
 import OrderLettersView from './exercises/OrderLettersView.jsx';
 import SpellView from './exercises/SpellView.jsx';
 import ReadAloudView from './exercises/ReadAloudView.jsx';
+import CoachPanel from '../ui/CoachPanel.jsx';
 
 function renderView(ex, props) {
   switch (ex.type) {
@@ -37,6 +40,9 @@ export default function SessionRunner({
 }) {
   const t = useT();
   const navigate = useNavigate();
+  const { settings, profile } = useApp();
+  const hintsOn = settings.hints !== false;
+  const { say } = useSpeech();
   const { buildSet, recordExercise, finishSession } = useLearning();
 
   const [items, setItems] = useState(
@@ -63,6 +69,13 @@ export default function SessionRunner({
     },
     []
   );
+
+  useEffect(() => {
+    if (phase !== 'feedback' || !feedback || settings.speakFeedback === false) return;
+    const title = t(feedback.titleKey, feedback.titleVars);
+    const body = t(feedback.textKey, feedback.textVars);
+    say(`${title}. ${body}`);
+  }, [phase, feedback, settings.speakFeedback]);
 
   const next = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -312,7 +325,7 @@ export default function SessionRunner({
               },
             })}
 
-            {phase === 'active' && ex.hints?.length > 0 && (
+            {phase === 'active' && hintsOn && ex.hints?.length > 0 && (
               <div style={{ marginTop: 16 }}>
                 <HintCard
                   hints={ex.hints}
@@ -335,6 +348,9 @@ export default function SessionRunner({
                   title={t(feedback.titleKey, feedback.titleVars)}
                   text={t(feedback.textKey, feedback.textVars)}
                 />
+                {!lastAnalysis?.ok && (
+                  <CoachPanel kind="child" analysis={lastAnalysis} profile={profile} />
+                )}
                 <div className="session__actions">
                   {!lastAnalysis?.ok ? (
                     <>
@@ -381,14 +397,17 @@ export default function SessionRunner({
               variant="primary"
               onClick={() => {
                 const durationSec = Math.round((Date.now() - stats.startedAt) / 1000);
-                finishSession({
-                  module,
-                  correct: stats.correct,
-                  total: idx + (phase === 'feedback' && lastAnalysis?.ok ? 1 : 0),
-                  stars: stats.stars,
-                  durationSec,
-                  questItem: null,
-                });
+                const attempted = idx + (phase === 'feedback' ? 1 : 0);
+                if (attempted > 0) {
+                  finishSession({
+                    module,
+                    correct: stats.correct,
+                    total: attempted,
+                    stars: stats.stars,
+                    durationSec,
+                    questItem: null,
+                  });
+                }
                 finishedRef.current = true;
                 exit();
               }}
