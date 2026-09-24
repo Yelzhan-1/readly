@@ -33,11 +33,11 @@ Readly — адаптивный тренажёр чтения и письма д
 
 ## Публичный демо-сайт
 
-Задуманный адрес после публикации: https://yelzhan-1.github.io/readly/
+Живое демо для жюри: https://readly-pearl.vercel.app
 
-Ночной деплой с ветки PR не прошёл (job `deploy` упал). Workflow `.github/workflows/pages.yml` больше не запускается с feature-ветки: публикация только пушем в `main` или вручную `workflow_dispatch` после мержа. Это утреннее действие пользователя. Пока сайт не выложен, жюри смотрит локально.
+Сайт уже на Vercel production (проект `readly`), базовый путь `/`, не `/readly/`. Облако Supabase на публичном сайте не обязательно: офлайн-демо Ayan и родительский PIN 1234 работают из браузера без переменных Supabase.
 
-Это статика GitHub Pages (проектный путь `/readly/`). Облако Supabase на публичном сайте не обязательно: демо Ayan и PIN 1234 работают из браузера.
+GitHub Pages для жюри не используется. Ночной деплой Pages с ветки PR не прошёл; workflow `.github/workflows/pages.yml` оставлен в репозитории, но текущий публичный адрес — Vercel.
 
 ## Демо-путь для жюри
 
@@ -81,7 +81,7 @@ Readly показывает, как детский продукт может а�
 - LIVE Coach работает только с задеплоенной edge-функцией `coach` и anon-ключом. Без этого бейдж остаётся DEMO. Отдельный ключ модели в репозиторий не кладётся.
 - Напоминание «каждый день» не отправляет push. Это Coming soon.
 - Подтверждение email родителя зависит от настроек Auth в Supabase.
-- Публикация: `.github/workflows/pages.yml` только с `main`. Ночной деплой с ветки PR не удался; адрес https://yelzhan-1.github.io/readly/ ещё не подтверждён как живой.
+- Публичный сайт: Vercel production https://readly-pearl.vercel.app (база `/`). GitHub Pages для жюри не используется: ночной деплой Pages с ветки PR не удался, workflow оставлен неиспользуемым.
 - Уязвимости npm в инструментах сборки не блокируют демо, но перед боевым запуском их стоит пересмотреть (`npm audit`).
 
 ---
@@ -92,12 +92,12 @@ Readly is an adaptive reading and writing trainer for children about 5–7. The 
 
 The loop is Observe → Understand → Adapt. Exercise results update the profile. The next set follows parent difficulty, session length, weak skills, and due words. Story context uses original interest themes only.
 
-**Public site (after a push to `main`):** https://yelzhan-1.github.io/readly/
+**Live jury demo (Vercel production):** https://readly-pearl.vercel.app
 
-The overnight Pages deploy from this PR branch failed. `.github/workflows/pages.yml` now runs only on push to `main`, plus manual `workflow_dispatch`. Publishing is a morning action after merge. Until then, use the local demo.
+The public site is already on Vercel production, project `readly`, base `/` (not `/readly/`). Offline child **Ayan** and parent PIN **1234** work in the browser without Supabase env. GitHub Pages is not the jury URL. An overnight Pages deploy from a PR branch failed; `.github/workflows/pages.yml` remains unused, and the current public URL is Vercel.
 
 **Local:** `npm i && npm run dev`, then http://127.0.0.1:5173/. Child **Ayan**. Parent PIN **1234** (shown only on the parent gate). Settings are on the child profile and in the header.
 
 **Storage:** no Supabase keys → `localStorage` and Coach DEMO. Anon key + parent sign-in → Postgres with RLS. The browser never receives `service_role`. A parent can link only a child profile they own. Cloud hydrate keeps the newer copy and never drops the local demo profile. Story edits queue if a push is already running; story updates are allowed by RLS.
 
-**Honest limits:** handwriting is graded from typed text; LIVE Coach requires the deployed `coach` edge function; the daily reminder is labeled Coming soon; practice content is English on purpose while the UI is English, Russian, and Kazakh. The intended public site is the offline demo at https://yelzhan-1.github.io/readly/, published only from `main`. That overnight deploy did not succeed.
+**Honest limits:** handwriting is graded from typed text; LIVE Coach requires the deployed `coach` edge function; the daily reminder is labeled Coming soon; practice content is English on purpose while the UI is English, Russian, and Kazakh. The live public demo is https://readly-pearl.vercel.app (Vercel production, base `/`). Offline Ayan and parent PIN 1234 work there without Supabase env.
